@@ -12,14 +12,31 @@
 
 $english = array(
 	// Generic
+	'admin:users:roles' => 'Roles',
+	'admin:users:addrole' => 'Add Role',
+	'admin:users:viewrole' => 'View Role',
+	'admin:users:editrole' => 'Edit Role',
 	
 	// Page titles 
 	
 	// Labels 
+	'roles:label:new' => 'New Role',
+	'roles:label:currentroles' => 'Current Roles',
+	'roles:label:users' => 'Users',
+	'roles:label:nousers' => 'No users',
 	
 	// River
 	
-	// Messages	
+	// Messages
+	'roles:error:requiredfields' => 'One or more required fields are missing',
+	'roles:error:delete' => 'There was an error deleting the Role',
+	'roles:error:edit' => 'There was an error editing the Role',
+	'roles:error:save' => 'There was an error saving the Role',
+	'roles:error:notfound' => 'Role not found',
+	'roles:success:save' => 'Successfully Saved Role',
+	'roles:success:delete' => 'Successfully Deleted Role',
+
+	
 	
 	// Other content
 );

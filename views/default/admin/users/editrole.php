@@ -1,6 +1,6 @@
 <?php
 /**
- * TGS Roles CSS
+ * TGS Roles Edit Form
  * 
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -9,12 +9,5 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-?>
-li.elgg-item {
-	border-bottom: 1px solid #ddd;
-	margin: 0;
-}
-
-li.elgg-item:hover {
-	background: #eee;
-}
+elgg_load_css('elgg.roles');
+echo roles_get_edit_content('edit', get_input('guid'));
