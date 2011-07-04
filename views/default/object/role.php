@@ -28,6 +28,15 @@ $metadata = elgg_view_menu('entity', array(
 ));
 
 if ($full) {
+	/*Debug
+	$role->add(get_user_by_username('james'));
+	var_dump(get_members_of_access_collection($role->member_acl));
+	var_dump($role->getMembers());
+	var_dump($role->isMember(get_user_by_username('james')));
+	$role->remove(get_user_by_username('james'));
+	End Debug*/
+	
+	
 	$description = elgg_view('output/longtext', array('value' => $role->description));
 
 	$role_users = elgg_list_entities_from_relationship(array(

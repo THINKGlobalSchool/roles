@@ -67,3 +67,86 @@ function roles_prepare_form_vars($role= null) {
 
 	return $values;
 }
+
+/** HELPERS **/
+/**
+ * Return a list of this role's members.
+ *
+ * @param int  $role_guid  The ID of the role.
+ * @param int  $limit      The limit
+ * @param int  $offset     The offset
+ * @param int  $site_guid  The site
+ * @param bool $count      Return the users (false) or the count of them (true)
+ *
+ * @return mixed
+ */
+function roles_get_members($role_guid, $limit = 10, $offset = 0, $site_guid = 0, $count = false) {
+
+	// in 1.7 0 means "not set."  rewrite to make sense.
+	if (!$site_guid) {
+		$site_guid = ELGG_ENTITIES_ANY_VALUE;
+	}
+	return elgg_get_entities_from_relationship(array(
+		'relationship' => ROLE_RELATIONSHIP,
+		'relationship_guid' => $role_guid,
+		'inverse_relationship' => TRUE,
+		'types' => 'user',
+		'limit' => $limit,
+		'offset' => $offset,
+		'count' => $count,
+		'site_guid' => $site_guid
+	));
+}
+
+/**
+ * Return whether a given user is a member of the role or not.
+ *
+ * @param int $role_guid The role ID
+ * @param int $user_guid  The user guid
+ *
+ * @return bool
+ */
+function roles_is_member($role_guid, $user_guid) {
+	$object = check_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
+	if ($object) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Add a user to a role.
+ *
+ * @param int $role_guid The group GUID.
+ * @param int $user_guid  The user GUID.
+ *
+ * @return bool
+ */
+function roles_add_user($role_guid, $user_guid) {
+	$result = add_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
+
+	if ($result) {
+		$params = array('role' => get_entity($role_guid), 'user' => get_entity($user_guid));
+		elgg_trigger_event('add', 'role', $params);
+	}
+
+	return $result;
+}
+
+/**
+ * Remove a user from a role.
+ *
+ * @param int $role_guid The group.
+ * @param int $user_guid  The user.
+ *
+ * @return bool
+ */
+function roles_remove_user($role_guid, $user_guid) {
+	// event needs to be triggered while user is still member of role to have access to group acl
+	$params = array('role' => get_entity($role_guid), 'user' => get_entity($user_guid));
+
+	elgg_trigger_event('remove', 'role', $params);
+	$result = remove_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
+	return $result;
+}
