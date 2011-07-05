@@ -18,3 +18,19 @@ li.elgg-item {
 li.elgg-item:hover {
 	background: #eee;
 }
+
+.roles-module {
+	width: 47%;
+	float: left;
+}
+
+#user-list {
+	padding-left: 5px;
+}
+
+.elgg-menu-user-role-menu {
+	color: #AAAAAA;
+    float: right;
+    font-size: 90%;
+    margin-left: 15px;
+}

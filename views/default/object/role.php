@@ -34,29 +34,17 @@ if ($full) {
 	var_dump($role->getMembers());
 	var_dump($role->isMember(get_user_by_username('james')));
 	$role->remove(get_user_by_username('james'));
-	End Debug*/
 	
+	$role->add(get_user_by_username('james'));
+		$role->add(get_user_by_username('billy'));
+			$role->add(get_user_by_username('teddy'));
+	
+	
+	End Debug*/
 	
 	$description = elgg_view('output/longtext', array('value' => $role->description));
 
-	$role_users = elgg_list_entities_from_relationship(array(
-		'relationship' => ROLE_RELATIONSHIP,
-		'relationship_guid' => $role->getGUID(),
-		'inverse_relationship' => TRUE,
-		'types' => array('user'),
-		'limit' => 0,
-		'offset' => 0,
-		'count' => FALSE,
-		'full_view' => FALSE,
-	));
-	
-	if (!$role_users) {
-		$role_users = elgg_echo('roles:label:nousers');
-	}
-	
-	$users_label = elgg_echo('roles:label:users');
-	
-	$users_module = elgg_view_module('inline', $users_label, $role_users);
+	$users_module = elgg_view('roles/users', array('guid' => $role->guid));
 		
 	// brief view
 	$params = array(
