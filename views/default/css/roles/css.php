@@ -34,3 +34,7 @@ li.elgg-item:hover {
     font-size: 90%;
     margin-left: 15px;
 }
+
+.role-state-selected, .role-state-selected:hover {
+	background: #ccc !important;
+}

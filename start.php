@@ -64,10 +64,10 @@ function roles_init() {
 					
 	// Register actions
 	$action_base = elgg_get_plugins_path() . 'roles/actions/roles';
-	elgg_register_action('roles/edit', "$action_base/edit.php");
-	elgg_register_action('roles/delete', "$action_base/delete.php");
-	elgg_register_action('roles/removeuser', "$action_base/removeuser.php");
-	elgg_register_action('roles/adduser', "$action_base/adduser.php");
+	elgg_register_action('roles/edit', "$action_base/edit.php", 'admin');
+	elgg_register_action('roles/delete', "$action_base/delete.php", 'admin');
+	elgg_register_action('roles/removeuser', "$action_base/removeuser.php", 'admin');
+	elgg_register_action('roles/adduser', "$action_base/adduser.php", 'admin');
 	
 	// Register one once for subtype
 	run_function_once("roles_run_once");

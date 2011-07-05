@@ -22,6 +22,9 @@ elgg.roles.init = function() {
 	
 	// Click event for remove button
 	$('a.remove-from-role').live('click', elgg.roles.remove_user);
+	
+	// Click event for add button
+	$('.add-to-role').live('click', elgg.roles.add_user);
 }
 
 elgg.roles.populated_module = function(event, type, params, value) {
@@ -32,18 +35,32 @@ elgg.roles.populated_module = function(event, type, params, value) {
 		var guid = id.substring(id.lastIndexOf('-') + 1);
 		
 		$(this).bind('click', function() {
-			// Spinner
-			$('#user-list').addClass('elgg-ajax-loader');
-			$('#user-list').html('');
-			// Load
-			elgg.get(elgg.roles.getUsersURL, {
-				data: {guid: guid}, 
-				success: function(data) {
-					$('#user-list').removeClass('elgg-ajax-loader');
-					$('#user-list').html(data);
-				},
+			// Load users
+			elgg.roles.load_users(guid);
+			
+			// Remove selected
+			roles_module.find('li.elgg-item').each(function() {
+				$(this).removeClass('role-state-selected');
 			});
+			
+			// Select this role
+			$(this).addClass('role-state-selected');
 		});
+	});
+}
+
+// Load users by role
+elgg.roles.load_users = function(role_guid) {
+	// Spinner
+	$('#user-list').addClass('elgg-ajax-loader');
+	$('#user-list').html('');
+	// Load
+	elgg.get(elgg.roles.getUsersURL, {
+		data: {guid: role_guid}, 
+		success: function(data) {
+			$('#user-list').removeClass('elgg-ajax-loader');
+			$('#user-list').html(data);
+		},
 	});
 }
 
@@ -71,6 +88,32 @@ elgg.roles.remove_user = function(event) {
 			}
 		});
 	} 
+	event.preventDefault();
+}
+
+elgg.roles.add_user = function(event) {
+	var $inputs = $('#roles-add-user-form :input');
+	
+	var values = {};
+	
+	$inputs.each(function() {
+	        values[this.name] = $(this).val();
+	});
+	
+	elgg.action('roles/adduser', {
+		data: {
+			username: values.username,
+			role_guid: values.role_guid
+		},
+		success: function(data) {
+			if (data.status == -1) {
+				//console.log('error: ' + data.system_messages.error);
+			} else {
+				elgg.roles.load_users(values.role_guid);
+			}
+		}
+	});
+	
 	event.preventDefault();
 }
 
