@@ -18,7 +18,7 @@ if (!$role) {
 	return;
 }
 
-$role_users = $role->getMembers();
+$role_users = $role->getMembers(0);
 
 if ($role_users) {
 	foreach($role_users as $user) {

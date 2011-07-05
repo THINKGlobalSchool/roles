@@ -10,7 +10,6 @@
  * 
  * @TODO 
  * - Determin permissions, ie: is it terrible if users can see whos in a role?
- * - Remove debug (error_log) calls
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
@@ -23,6 +22,8 @@ function roles_init() {
 	
 	// Register class
 	elgg_register_class('ElggRole', elgg_get_plugins_path() . 'roles/lib/classes/ElggRole.php');
+	
+		var_dump(get_user_roles(elgg_get_logged_in_user_entity(), 0));
 	
 	// Define role relationship constant
 	define('ROLE_RELATIONSHIP', 'member_of_role');
@@ -156,8 +157,8 @@ function roles_create_event_listener($event, $object_type, $object) {
 			elgg_set_context('role_acl');
 			add_user_to_access_collection($object->owner_guid, $role_acl);
 			elgg_set_context($context);
-			error_log("role-debug: Create Event Fired | Created ID: $role_acl");
-			error_log("role-debug: Members: " . count(get_members_of_access_collection($role_acl)));
+			//error_log("role-debug: Create Event Fired | Created ID: $role_acl");
+			//error_log("role-debug: Members: " . count(get_members_of_access_collection($role_acl)));
 		} else {
 			return FALSE;
 		}
@@ -172,11 +173,11 @@ function roles_delete_event_listener($event, $object_type, $object) {
 	if (elgg_instanceof($object, 'object', 'role')) {
 		$context = elgg_get_context();
 		elgg_set_context('role_acl');
-		error_log("role-debug: Delete Event Fired | ID: {$object->member_acl}");
-		error_log("role-debug: Members Before: " . count(get_members_of_access_collection($object->member_acl)));
+		//error_log("role-debug: Delete Event Fired | ID: {$object->member_acl}");
+		//error_log("role-debug: Members Before: " . count(get_members_of_access_collection($object->member_acl)));
 		delete_access_collection($object->member_acl);
-		error_log("role-debug: Delete Event | Deleted: {$object->member_acl}");
-		error_log("role-debug: Members After: " . count(get_members_of_access_collection($object->member_acl)));
+		//error_log("role-debug: Delete Event | Deleted: {$object->member_acl}");
+		//error_log("role-debug: Members After: " . count(get_members_of_access_collection($object->member_acl)));
 		elgg_set_context($context);
 	}
 	return TRUE;
@@ -193,7 +194,7 @@ function roles_add_user_event_listener($event, $object_type, $object) {
 	$context = elgg_get_context();
 	elgg_set_context('role_acl');
 	$result = add_user_to_access_collection($user->getGUID(), $acl);
-	error_log("role-debug: Add Event Fired | Member Adding: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
+	//error_log("role-debug: Add Event Fired | Member Adding: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
 	elgg_set_context($context);		
 	return TRUE;	
 }
@@ -210,7 +211,7 @@ function roles_remove_user_event_listener($event, $object_type, $object) {
 	$context = elgg_get_context();
 	elgg_set_context('role_acl');
 	remove_user_from_access_collection($user->getGUID(), $acl);
-	error_log("role-debug: Remove Event Fired | Member Removing: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
+	//error_log("role-debug: Remove Event Fired | Member Removing: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
 	elgg_set_context($context);	
 	return TRUE;
 }

@@ -32,6 +32,12 @@ if (!$role || !elgg_instanceof($role, 'object', 'role')) {
 	forward(REFERER);
 }
 
+// Check if user is already a member, don't try to add them
+if ($role->isMember($user)) {
+	register_error(elgg_echo('roles:error:existing', array($user->name, $role->title)));
+	forward(REFERER);
+}
+
 // Try to remove
 if ($role->add($user)) {
 	// All good!

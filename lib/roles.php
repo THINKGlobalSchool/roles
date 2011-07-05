@@ -86,6 +86,7 @@ function roles_get_members($role_guid, $limit = 10, $offset = 0, $site_guid = 0,
 	if (!$site_guid) {
 		$site_guid = ELGG_ENTITIES_ANY_VALUE;
 	}
+		
 	return elgg_get_entities_from_relationship(array(
 		'relationship' => ROLE_RELATIONSHIP,
 		'relationship_guid' => $role_guid,
@@ -118,8 +119,8 @@ function roles_is_member($role_guid, $user_guid) {
 /**
  * Add a user to a role.
  *
- * @param int $role_guid The group GUID.
- * @param int $user_guid  The user GUID.
+ * @param int $role_guid The role GUID.
+ * @param int $user_guid The user GUID.
  *
  * @return bool
  */
@@ -149,4 +150,50 @@ function roles_remove_user($role_guid, $user_guid) {
 	elgg_trigger_event('remove', 'role', $params);
 	$result = remove_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
 	return $result;
+}
+
+/**
+ * Helper function to grab an array of existing roles
+ * - This is pretty simplistic for now, because all roles 
+ * are accessible by logged in users
+ * 
+ * @param int  $limit      The limit
+ * @param int  $offset     The offset
+ * @param int  $site_guid  The site
+ * @param bool $count      Return the users (false) or the count of them (true)
+ * @return array
+ */
+function get_roles($limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALUE, $count = FALSE) {
+	return elgg_get_entities(array(
+		'type' => 'object',
+		'subtype' => 'role',
+		'limit' => $limit,
+		'offset' => $offset,
+		'count' => $count,
+		'site_guid' => $site_guid
+	));
+}
+
+/**
+ * Helper function to grab a given users roles
+ * 
+ * @param ElggUser $user       The user
+ * @param int      $limit      The limit
+ * @param int      $offset     The offset
+ * @param int      $site_guid  The site
+ * @param bool     $count      Return the users (false) or the count of them (true)
+ * @return array
+ */
+function get_user_roles($user, $limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALUE, $count = FALSE) {
+	return elgg_get_entities_from_relationship(array(
+		'relationship' => 'member_of_role',
+		'relationship_guid' => $user->guid,
+		'inverse_relationship' => FALSE,
+		'types' => 'object',
+		'subtypes' => 'role',
+		'limit' => $limit,
+		'offset' => $offset,
+		'count' => $count,
+		'site_guid' => $site_guid
+	));
 }
