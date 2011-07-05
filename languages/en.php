@@ -34,8 +34,14 @@ $english = array(
 	'roles:error:edit' => 'There was an error editing the Role',
 	'roles:error:save' => 'There was an error saving the Role',
 	'roles:error:notfound' => 'Role not found',
+	'roles:error:invaliduser' => 'Invalid User',
+	'roles:error:invalidrole' => 'Invalid Role',
+	'roles:error:remove' => 'There was an error removing the user from role',
+	'roles:success:remove' => 'Successfully removed user from role',
 	'roles:success:save' => 'Successfully Saved Role',
 	'roles:success:delete' => 'Successfully Deleted Role',
+	'roles:removeconfirm' => 'Are you sure you want to remove this user from the role?',
+
 
 	
 	

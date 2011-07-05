@@ -34,10 +34,7 @@ function roles_init() {
 	// Register JS library
 	$r_js = elgg_get_simplecache_url('js', 'roles/roles');
 	elgg_register_js('elgg.roles', $r_js);
-	
-	// Load CSS/JSS @todo elsewhere?
-	elgg_load_js('elgg.roles');
-	
+		
 	// Add submenus
 	elgg_register_event_handler('pagesetup', 'system', 'roles_submenus');
 	
@@ -69,6 +66,8 @@ function roles_init() {
 	$action_base = elgg_get_plugins_path() . 'roles/actions/roles';
 	elgg_register_action('roles/edit', "$action_base/edit.php");
 	elgg_register_action('roles/delete', "$action_base/delete.php");
+	elgg_register_action('roles/removeuser', "$action_base/removeuser.php");
+	elgg_register_action('roles/adduser', "$action_base/adduser.php");
 	
 	// Register one once for subtype
 	run_function_once("roles_run_once");
@@ -82,7 +81,14 @@ function roles_init() {
  * @return NULL
  */
 function roles_page_handler($page) {
-	return;
+	switch ($page[0]) {
+		case 'loadusers':
+			$guid = sanitise_string(get_input('guid'));
+			echo elgg_view('roles/users', array('guid' => $guid));
+			break;
+		default: 
+			break;
+	}	
 }
 
 /**
@@ -108,9 +114,6 @@ function roles_submenus() {
  * Roles entity plugin hook
  */
 function roles_setup_entity_menu($hook, $type, $return, $params) {
-	if (elgg_in_context('widgets')) {
-		return $return;
-	}
 
 	$entity = $params['entity'];
 	

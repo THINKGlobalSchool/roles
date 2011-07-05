@@ -10,18 +10,19 @@
  * 
  */
 elgg_load_css('elgg.roles');
+elgg_load_js('elgg.roles');
 
-$content = "<a href='". elgg_get_site_url() . "admin/users/addrole' class='elgg-button elgg-button-action'>" . elgg_echo('roles:label:new') . "</a>";
+$content = "<a href='". elgg_get_site_url() . "admin/users/addrole' class='elgg-button elgg-button-action'>" . elgg_echo('roles:label:new') . "</a><div style='clear: both;'></div>";
 
-
-$roles_label = elgg_echo('roles:label:currentroles');
-$roles .= elgg_list_entities(array(
-	'type' => 'object',
-	'subtype' => 'role', 
-	'full_view' => FALSE,
-	'limit' => 10,
+$content .= elgg_view('modules/ajaxmodule', array(
+	'title' => elgg_echo('roles:label:currentroles'),
+	'subtypes' => array('role'),
+	'limit' => 15,
+	'module_type' => 'inline',
+	'module_class' => 'roles-module',
+	'module_id' => 'role-list',
 ));
 
-$content .= elgg_view_module('inline', $roles_label, $roles);
-
+// Placeholder for user list
+$content .= "<div id='user-list' class='roles-module'></div>";
 echo $content;
