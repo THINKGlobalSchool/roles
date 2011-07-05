@@ -24,7 +24,9 @@ $english = array(
 	'roles:label:new' => 'New Role',
 	'roles:label:currentroles' => 'Current Roles',
 	'roles:label:users' => 'Users',
+	'roles:label:adduser' => 'Add User',
 	'roles:label:nousers' => 'No users',
+	'roles:label:username' => 'Username',
 	
 	// River
 	
@@ -36,7 +38,9 @@ $english = array(
 	'roles:error:notfound' => 'Role not found',
 	'roles:error:invaliduser' => 'Invalid User',
 	'roles:error:invalidrole' => 'Invalid Role',
-	'roles:error:remove' => 'There was an error removing the user from role',
+	'roles:error:remove' => 'There was an error removing the user from the role',
+	'roles:error:add' => 'There was an error adding the user to the role',
+	'roles:success:add' => 'Successfully added user to role',
 	'roles:success:remove' => 'Successfully removed user from role',
 	'roles:success:save' => 'Successfully Saved Role',
 	'roles:success:delete' => 'Successfully Deleted Role',

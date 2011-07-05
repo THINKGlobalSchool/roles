@@ -20,14 +20,12 @@ if (!$role) {
 
 $role_users = $role->getMembers();
 
-
-
 if ($role_users) {
 	foreach($role_users as $user) {
 		$icon = elgg_view_entity_icon($user, 'tiny');
 		
 		$delete_button = elgg_view("output/confirmlink",array(
-			'href' => "action/roles/removeuser?user_guid={$user->guid}&role_guid={$role_guid}",
+			'href' => "action/roles/removeuser?user_guid={$user->guid}&role_guid={$role->guid}",
 			'text' => "<span class=\"elgg-icon elgg-icon-delete right\"></span>",
 			'confirm' => elgg_echo('roles:removeconfirm'),
 			'text_encode' => false,
@@ -67,8 +65,11 @@ if ($role_users) {
 	$content = elgg_echo('roles:label:nousers');
 } 
 
-$users_label = elgg_echo('roles:label:users');
+$user_form_label = elgg_echo('roles:label:adduser');
+$user_form = elgg_view_form('roles/adduser', array('id' => 'roles-add-user-form'), array('role_guid' => $role->guid));
+$user_form_module = elgg_view_module('inline', $user_form_label, $user_form);
 
+$users_label = elgg_echo('roles:label:users');
 $users_module = elgg_view_module('inline', $users_label, $content);
 
-echo $users_module;
+echo $user_form_module . $users_module;
