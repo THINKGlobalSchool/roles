@@ -40,6 +40,7 @@ $english = array(
 	'roles:error:invalidrole' => 'Invalid Role',
 	'roles:error:remove' => 'There was an error removing the user from the role',
 	'roles:error:add' => 'There was an error adding the user to the role',
+	'roles:error:existing' => '%s is already a member of the role %s',
 	'roles:success:add' => 'Successfully added user to role',
 	'roles:success:remove' => 'Successfully removed user from role',
 	'roles:success:save' => 'Successfully Saved Role',
