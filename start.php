@@ -23,8 +23,6 @@ function roles_init() {
 	// Register class
 	elgg_register_class('ElggRole', elgg_get_plugins_path() . 'roles/lib/classes/ElggRole.php');
 	
-		var_dump(get_user_roles(elgg_get_logged_in_user_entity(), 0));
-	
 	// Define role relationship constant
 	define('ROLE_RELATIONSHIP', 'member_of_role');
 		
