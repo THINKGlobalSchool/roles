@@ -12,6 +12,7 @@
 
 $english = array(
 	// Generic
+	'roles' => 'Roles',
 	'admin:users:roles' => 'Roles',
 	'admin:users:addrole' => 'Add Role',
 	'admin:users:viewrole' => 'View Role',
