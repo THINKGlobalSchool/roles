@@ -27,6 +27,7 @@ $english = array(
 	'roles:label:adduser' => 'Add User',
 	'roles:label:nousers' => 'No users',
 	'roles:label:username' => 'Username',
+	'roles:label:hoveradd' => 'Set Role %s',
 	
 	// River
 	
@@ -41,8 +42,8 @@ $english = array(
 	'roles:error:remove' => 'There was an error removing the user from the role',
 	'roles:error:add' => 'There was an error adding the user to the role',
 	'roles:error:existing' => '%s is already a member of the role %s',
-	'roles:success:add' => 'Successfully added user to role',
-	'roles:success:remove' => 'Successfully removed user from role',
+	'roles:success:add' => 'Successfully added user to role %s',
+	'roles:success:remove' => 'Successfully removed user from role %s',
 	'roles:success:save' => 'Successfully Saved Role',
 	'roles:success:delete' => 'Successfully Deleted Role',
 	'roles:removeconfirm' => 'Are you sure you want to remove this user from the role?',

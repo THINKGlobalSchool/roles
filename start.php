@@ -46,6 +46,9 @@ function roles_init() {
 	// Role entity menu hook
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 999);	
 	
+	// Extend Admin Hover Menu 
+	elgg_register_plugin_hook_handler('register', 'menu:user_hover', 'roles_user_hover_menu_setup', 9999);
+	
 	// Register a handler for creating roles
 	elgg_register_event_handler('create', 'object', 'roles_create_event_listener');
 
@@ -141,6 +144,26 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 
 	$return[] = ElggMenuItem::factory($options);
 
+	return $return;
+}
+
+/**
+ * Extend the user hover menu
+ */
+function roles_user_hover_menu_setup($hook, $type, $return, $params) {
+	
+	$user = $params['entity'];
+	
+	foreach(get_user_roles_without($user, 0) as $role) {
+		$options = array(
+			'name' => 'add_role_' . $role->guid,
+			'text' => elgg_echo('roles:label:hoveradd', array($role->title)),
+			'href' => elgg_add_action_tokens_to_url("action/roles/adduser?username={$user->username}&role_guid={$role->guid}"),
+			'section' => 'admin',
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+	
 	return $return;
 }
 

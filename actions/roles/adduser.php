@@ -41,7 +41,7 @@ if ($role->isMember($user)) {
 // Try to remove
 if ($role->add($user)) {
 	// All good!
-	system_message(elgg_echo('roles:success:add'));
+	system_message(elgg_echo('roles:success:add', array($role->title)));
 } else {
 	// There was an error
 	register_error(elgg_echo('roles:error:add'));
