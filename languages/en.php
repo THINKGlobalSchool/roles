@@ -17,6 +17,7 @@ $english = array(
 	'admin:users:viewrole' => 'View Role',
 	'admin:users:editrole' => 'Edit Role',
 	'roles:role' => 'Role',
+	'item:object:role' => 'Roles',
 	
 	// Page titles 
 	
