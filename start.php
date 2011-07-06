@@ -61,6 +61,10 @@ function roles_init() {
 	// Register a handler for removing assignees from roles
 	elgg_register_event_handler('remove','role','roles_remove_user_event_listener');	
 	
+	// Hook into create/update events to save roles for an entity
+	elgg_register_event_handler('update', 'all', 'roles_save');
+	elgg_register_event_handler('create', 'all', 'roles_save');
+
 	// Plugin hook for write access
 	elgg_register_plugin_hook_handler('access:collections:write', 'all', 'roles_write_acl_plugin_hook');
 					
@@ -253,6 +257,25 @@ function roles_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params)
 		}
 	}
 	return $returnvalue;
+}
+
+/**
+ * Save roles to object upon save / edit
+ *
+ */
+function roles_save($event, $object_type, $object) {
+	if (elgg_instanceof($object, 'object')) {
+		$marker = get_input('roles_marker');
+		if ($marker == 'on') {
+			$roles = get_input('roles_list');
+			if (empty($roles)) {
+				$roles = array();
+			}
+
+			$object->roles = $roles;
+		}
+	}
+	return TRUE;
 }
 
 /**
