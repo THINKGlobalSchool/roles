@@ -197,3 +197,40 @@ function get_user_roles($user, $limit = 10, $offset = 0, $site_guid = ELGG_ENTIT
 		'site_guid' => $site_guid
 	));
 }
+
+/**
+ * Helper function to grab roles that a 
+ * user does not belong to
+ * - Not too sure about that function name :S
+ * 
+ * @param ElggUser $user       The user
+ * @param int      $limit      The limit
+ * @param int      $offset     The offset
+ * @param int      $site_guid  The site
+ * @param bool     $count      Return the users (false) or the count of them (true)
+ * @return array
+ */
+function get_user_roles_without($user, $limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALUE, $count = FALSE) {
+	
+	$options = array(
+		'types' => 'object',
+		'subtypes' => 'role',
+		'limit' => $limit,
+		'offset' => $offset,
+		'count' => $count,
+		'site_guid' => $site_guid
+	);
+	
+	$relationship = 'member_of_role';
+	$db_prefix = elgg_get_config('dbprefix');
+	
+	// This is the magic SQL that handles the 'without' relationship part
+	$options['wheres'][] = "NOT EXISTS (
+				SELECT 1 FROM {$db_prefix}entity_relationships
+					WHERE guid_one = '$user->guid'
+					AND relationship = '$relationship'
+					AND guid_two = e.guid
+			)";
+	
+	return elgg_get_entities($options);
+}

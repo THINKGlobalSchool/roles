@@ -35,7 +35,7 @@ if (!$role || !elgg_instanceof($role, 'object', 'role')) {
 // Try to remove
 if ($role->remove($user)) {
 	// All good!
-	system_message(elgg_echo('roles:success:remove'));
+	system_message(elgg_echo('roles:success:remove', array($role->title)));
 } else {
 	// There was an error
 	register_error(elgg_echo('roles:error:remove'));
