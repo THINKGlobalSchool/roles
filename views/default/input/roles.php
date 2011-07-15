@@ -1,7 +1,8 @@
 <?php
 /**
- * TGS Roles input
- *  
+ * TGS Roles input selector (for entities)
+ * - Excludes hidden roles
+ *
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
@@ -23,7 +24,9 @@ $roles_entities = get_roles(0);
 $roles = array();
 
 foreach($roles_entities as $role) {
-	$roles[$role->title] = $role->guid;
+	if (!$role->hidden) {
+		$roles[$role->title] = $role->guid;
+	}
 }
 
 if (empty($selected_roles)) {

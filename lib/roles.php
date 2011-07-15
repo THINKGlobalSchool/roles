@@ -49,6 +49,7 @@ function roles_prepare_form_vars($role= null) {
 		'title' => '',
 		'description' => '',
 		'guid' => NULL,
+		'hidden' => '',
 	);
 
 	if ($role) {
