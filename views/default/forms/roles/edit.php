@@ -13,6 +13,7 @@
 $title = elgg_extract('title', $vars, '');
 $guid = elgg_extract('guid', $vars, NULL);
 $description = elgg_extract('description', $vars, '');
+$hidden = elgg_extract('hidden', $vars, 0);
 
 // Check if we've got an entity, if so, we're editing.
 if ($guid) {
@@ -35,6 +36,16 @@ $description_input = elgg_view("input/longtext", array(
 	'value' => $description
 ));
 
+$hidden_label = elgg_echo('roles:label:hidden');
+$hidden_input = elgg_view('input/dropdown', array(
+	'name' => 'hidden', 
+	'value' => $hidden,
+	'options_values' => array(
+		1 => elgg_echo('roles:label:yes'),
+		0 => elgg_echo('roles:label:no'),
+	)
+));
+
 $submit_input = elgg_view('input/submit', array(
 	'name' => 'submit', 
 	'value' => elgg_echo('save')
@@ -51,6 +62,10 @@ $form_body = <<<HTML
 	<div>
 		<label>$description_label</label><br />
         $description_input
+	</div><br />
+	<div>
+		<label>$hidden_label</label>
+		$hidden_input
 	</div><br />
 	<div class='elgg-foot'>
 		$submit_input

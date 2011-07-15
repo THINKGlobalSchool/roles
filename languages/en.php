@@ -30,6 +30,9 @@ $english = array(
 	'roles:label:nousers' => 'No users',
 	'roles:label:username' => 'Username',
 	'roles:label:hoveradd' => 'Set Role %s',
+	'roles:label:hidden' => 'Hide from Role Inputs',
+	'roles:label:yes' => 'Yes',
+	'roles:label:no' => 'No',
 	
 	// River
 	
