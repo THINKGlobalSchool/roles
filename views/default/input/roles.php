@@ -24,9 +24,7 @@ $roles_entities = get_roles(0);
 $roles = array();
 
 foreach($roles_entities as $role) {
-	if (!$role->hidden) {
-		$roles[$role->title] = $role->guid;
-	}
+	$roles[$role->title] = $role->guid;
 }
 
 if (empty($selected_roles)) {
