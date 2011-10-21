@@ -1,7 +1,7 @@
 <?php
 /**
  * TGS Roles dropdown, for choosing one specific role
- * - Excludes hidden roles
+ * - Excludes hidden roles by default
  *  
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -10,6 +10,7 @@
  * @link http://www.thinkglobalschool.com/
  *
  * @uses $vars['show_all'] Include an 'All' entry
+ * @uses $vars['show_hidden'] Include hidden roles
  */
 
 // Get all site roles
@@ -24,7 +25,7 @@ if ($vars['show_all']) {
 }
 
 foreach($roles_entities as $role) {
-	if (!$role->hidden) {
+	if ($vars['show_hidden'] || !$role->hidden) {
 		$vars['options_values'][$role->guid] = $role->title;
 	}
 }
