@@ -28,10 +28,12 @@ function roles_init() {
 		
 	// Register CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/css');
+	elgg_register_simplecache_view('css/roles/css');	
 	elgg_register_css('elgg.roles', $r_css);
 		
 	// Register JS library
 	$r_js = elgg_get_simplecache_url('js', 'roles/roles');
+	elgg_register_simplecache_view('js/roles/roles');	
 	elgg_register_js('elgg.roles', $r_js);
 		
 	// Add submenus
