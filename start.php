@@ -95,8 +95,9 @@ function roles_page_handler($page) {
 			echo elgg_view('roles/users', array('guid' => $guid));
 			break;
 		default: 
-			break;
-	}	
+			return FALSE;
+	}
+	return TRUE;
 }
 
 /**
