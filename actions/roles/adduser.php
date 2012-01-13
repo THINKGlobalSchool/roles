@@ -11,15 +11,12 @@
  */
 
 // Get user/role inputs
-$username = sanitise_string(get_input('username'));
+$users = get_input('members');
 $role_guid = (int)sanitise_string(get_input('role_guid'));
 
-// Get user entity
-$user = get_user_by_username($username);
-
 // Check for user
-if (!$user) {
-	register_error(elgg_echo('roles:error:invaliduser'));
+if (empty($users)) {
+	register_error(elgg_echo('roles:error:userrequired'));
 	forward(REFERER);
 }
 
@@ -32,18 +29,25 @@ if (!$role || !elgg_instanceof($role, 'object', 'role')) {
 	forward(REFERER);
 }
 
-// Check if user is already a member, don't try to add them
-if ($role->isMember($user)) {
-	register_error(elgg_echo('roles:error:existing', array($user->name, $role->title)));
-	forward(REFERER);
-}
-
-// Try to remove
-if ($role->add($user)) {
-	// All good!
-	system_message(elgg_echo('roles:success:add', array($role->title)));
-} else {
-	// There was an error
-	register_error(elgg_echo('roles:error:add'));
+// Loop and add users
+foreach ($users as $guid) {
+	$user = get_entity($guid);
+	if (elgg_instanceof($user, 'user')) {
+		// Check if user is already a member, don't try to add them
+		if ($role->isMember($user)) {
+			register_error(elgg_echo('roles:error:existing', array($user->name, $role->title)));
+		} else {
+			// Try to add
+			if ($role->add($user)) {
+				// All good!
+				system_message(elgg_echo('roles:success:add', array($role->title)));
+			} else {
+				// There was an error
+				register_error(elgg_echo('roles:error:add'));
+			}
+		}	
+	} else {
+		register_error(elgg_echo('roles:error:invaliduser', array($guid)));
+	}
 }
 forward(REFERER);

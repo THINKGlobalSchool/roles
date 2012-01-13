@@ -92,24 +92,17 @@ elgg.roles.remove_user = function(event) {
 }
 
 elgg.roles.add_user = function(event) {
-	var $inputs = $('#roles-add-user-form :input');
-	
-	var values = {};
-	
-	$inputs.each(function() {
-	        values[this.name] = $(this).val();
-	});
-	
+	var data = $('#roles-add-user-form').serialize();
+	var role_guid = $('#roles-add-user-form input[name=role_guid]').val();
+	console.log(role_guid);
+
 	elgg.action('roles/adduser', {
-		data: {
-			username: values.username,
-			role_guid: values.role_guid
-		},
+		data: data,
 		success: function(data) {
 			if (data.status == -1) {
 				//console.log('error: ' + data.system_messages.error);
 			} else {
-				elgg.roles.load_users(values.role_guid);
+				elgg.roles.load_users(role_guid);
 			}
 		}
 	});

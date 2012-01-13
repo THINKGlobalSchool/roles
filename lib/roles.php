@@ -126,7 +126,11 @@ function roles_is_member($role_guid, $user_guid) {
  * @return bool
  */
 function roles_add_user($role_guid, $user_guid) {
-	$result = add_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
+	try {
+		$result = add_entity_relationship($user_guid, ROLE_RELATIONSHIP, $role_guid);
+	} catch (DatabaseException $e) {
+		$result = FALSE;
+	}
 
 	if ($result) {
 		$params = array('role' => get_entity($role_guid), 'user' => get_entity($user_guid));
