@@ -14,10 +14,8 @@
 $role_guid = elgg_extract('role_guid', $vars);
 
 // Labels/Input
-$user_label = elgg_echo('roles:label:username');
-$user_input = elgg_view('input/text', array(
-	'name' => 'username',
-));
+$user_label = elgg_echo('roles:label:users');
+$user_input = elgg_view('input/userpicker');
 
 $role_input = elgg_view('input/hidden', array(
 	'name' => 'role_guid',
@@ -31,6 +29,9 @@ $submit_input = elgg_view('input/submit', array(
 ));
 
 $form_body = <<<HTML
+	<script>
+		elgg.userpicker.init();
+	</script>
 	<label>$user_label</label>
 	$user_input 
 	$submit_input

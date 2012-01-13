@@ -11,6 +11,8 @@
  */
 elgg_load_css('elgg.roles');
 elgg_load_js('elgg.roles');
+elgg_load_js('elgg.userpicker');
+elgg_load_js('elgg.userpicker.html');
 
 $content = "<a href='". elgg_get_site_url() . "admin/users/addrole' class='elgg-button elgg-button-action'>" . elgg_echo('roles:label:new') . "</a><div style='clear: both;'></div>";
 
