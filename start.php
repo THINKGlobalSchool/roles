@@ -183,7 +183,11 @@ function roles_create_event_listener($event, $object_type, $object) {
 		if ($role_acl) {
 			$object->member_acl = $role_acl;
 			elgg_set_context('role_acl');
-			add_user_to_access_collection($object->owner_guid, $role_acl);
+			try {
+				add_user_to_access_collection($object->owner_guid, $role_acl);
+			} catch (DatabaseException $e) {
+			
+			}
 			elgg_set_context($context);
 			//error_log("role-debug: Create Event Fired | Created ID: $role_acl");
 			//error_log("role-debug: Members: " . count(get_members_of_access_collection($role_acl)));
@@ -221,7 +225,11 @@ function roles_add_user_event_listener($event, $object_type, $object) {
 	$acl = $role->member_acl;
 	$context = elgg_get_context();
 	elgg_set_context('role_acl');
-	$result = add_user_to_access_collection($user->getGUID(), $acl);
+	try {
+		$result = add_user_to_access_collection($user->getGUID(), $acl);
+	} catch (DatabaseException $e) {
+		$result = FALSE;
+	}
 	//error_log("role-debug: Add Event Fired | Member Adding: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
 	elgg_set_context($context);		
 	return TRUE;	
