@@ -112,4 +112,3 @@ elgg.roles.add_user = function(event) {
 
 elgg.register_hook_handler('init', 'system', elgg.roles.init);
 elgg.register_hook_handler('populated', 'modules', elgg.roles.populated_module);
-//</script>

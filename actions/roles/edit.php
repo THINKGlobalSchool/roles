@@ -13,7 +13,7 @@
 // Get inputs
 $title = get_input('title');
 $description = get_input('description');
-$hidden = get_input('hidden');
+$hidden = get_input('hidden', 0);
 $role_guid = get_input('role_guid', NULL);
 
 // Create Sticky form
