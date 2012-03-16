@@ -66,9 +66,6 @@ function roles_init() {
 	// Hook into create/update events to save roles for an entity
 	elgg_register_event_handler('update', 'all', 'roles_save');
 	elgg_register_event_handler('create', 'all', 'roles_save');
-
-	// Plugin hook for write access
-	elgg_register_plugin_hook_handler('access:collections:write', 'all', 'roles_write_acl_plugin_hook');
 					
 	// Register actions
 	$action_base = elgg_get_plugins_path() . 'roles/actions/roles';
@@ -182,13 +179,11 @@ function roles_create_event_listener($event, $object_type, $object) {
 		$role_acl = create_access_collection(elgg_echo('roles:role') . ": " . $object->title, $object->getGUID());
 		if ($role_acl) {
 			$object->member_acl = $role_acl;
-			elgg_set_context('role_acl');
 			try {
 				add_user_to_access_collection($object->owner_guid, $role_acl);
 			} catch (DatabaseException $e) {
 			
 			}
-			elgg_set_context($context);
 			//error_log("role-debug: Create Event Fired | Created ID: $role_acl");
 			//error_log("role-debug: Members: " . count(get_members_of_access_collection($role_acl)));
 		} else {
@@ -203,14 +198,11 @@ function roles_create_event_listener($event, $object_type, $object) {
  */
 function roles_delete_event_listener($event, $object_type, $object) {
 	if (elgg_instanceof($object, 'object', 'role')) {
-		$context = elgg_get_context();
-		elgg_set_context('role_acl');
 		//error_log("role-debug: Delete Event Fired | ID: {$object->member_acl}");
 		//error_log("role-debug: Members Before: " . count(get_members_of_access_collection($object->member_acl)));
 		delete_access_collection($object->member_acl);
 		//error_log("role-debug: Delete Event | Deleted: {$object->member_acl}");
 		//error_log("role-debug: Members After: " . count(get_members_of_access_collection($object->member_acl)));
-		elgg_set_context($context);
 	}
 	return TRUE;
 }
@@ -223,15 +215,14 @@ function roles_add_user_event_listener($event, $object_type, $object) {
 	$role = $object['role'];
 	$user = $object['user'];
 	$acl = $role->member_acl;
-	$context = elgg_get_context();
-	elgg_set_context('role_acl');
+
 	try {
 		$result = add_user_to_access_collection($user->getGUID(), $acl);
 	} catch (DatabaseException $e) {
 		$result = FALSE;
 	}
 	//error_log("role-debug: Add Event Fired | Member Adding: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
-	elgg_set_context($context);		
+	
 	return TRUE;	
 }
 
@@ -244,30 +235,10 @@ function roles_remove_user_event_listener($event, $object_type, $object) {
 	$user = $object['user'];
 	$acl = $role->member_acl;
 
-	$context = elgg_get_context();
-	elgg_set_context('role_acl');
 	remove_user_from_access_collection($user->getGUID(), $acl);
 	//error_log("role-debug: Remove Event Fired | Member Removing: {$user->guid} | Members: " . count(get_members_of_access_collection($acl)));
-	elgg_set_context($context);	
-	return TRUE;
-}
 
-/**
- * Return the write access for the current role if the user has write access to it.
- */
-function roles_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) {
-	if (elgg_in_context('role_acl')) {
-		// get all roles if logged in
-		if ($loggedin = elgg_get_logged_in_user_entity()) {
-			$roles = elgg_get_entities(array('types' => 'object', 'subtypes' => 'role'));
-			if (is_array($roles)) {
-				foreach ($roles as $role) {
-					$returnvalue[$role->member_acl] = elgg_echo('roles:role') . ': ' . $roles->title;
-				}
-			}
-		}
-	}
-	return $returnvalue;
+	return TRUE;
 }
 
 /**
