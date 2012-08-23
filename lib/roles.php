@@ -180,6 +180,35 @@ function get_roles($limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALU
 }
 
 /**
+ * Helper function to retrieve a role with given title (case insensitive)
+ * This will return the first role with given title
+ * 
+ * @param int $title Title of the role (careful, these could change!)
+ */
+function get_role_by_title($title) {
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'role',
+		'limit' => 1,
+	);
+
+	$dbprefix = elgg_get_config('dbprefix');
+
+	// Customize query to grab only roles with given title (more efficient)
+	$options['joins'][] = "JOIN {$dbprefix}objects_entity as oe";
+	$options['wheres'][] = "oe.guid = e.guid";
+	$options['wheres'][] = "oe.title = '{$title}'";
+	
+	$role = elgg_get_entities($options);
+
+	if ($role[0]) {
+		return $role;
+	}
+
+	return FALSE;
+}
+
+/**
  * Helper function to grab a given users roles
  * 
  * @param ElggUser $user       The user
