@@ -202,7 +202,7 @@ function get_role_by_title($title) {
 	$role = elgg_get_entities($options);
 
 	if ($role[0]) {
-		return $role;
+		return $role[0];
 	}
 
 	return FALSE;
