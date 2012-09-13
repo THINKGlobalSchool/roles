@@ -162,7 +162,7 @@ function roles_user_hover_menu_setup($hook, $type, $return, $params) {
 		$options = array(
 			'name' => 'add_role_' . $role->guid,
 			'text' => elgg_echo('roles:label:hoveradd', array($role->title)),
-			'href' => elgg_add_action_tokens_to_url("action/roles/adduser?username={$user->username}&role_guid={$role->guid}"),
+			'href' => elgg_add_action_tokens_to_url("action/roles/adduser?members[]={$user->guid}&role_guid={$role->guid}"),
 			'section' => 'admin',
 		);
 		$return[] = ElggMenuItem::factory($options);
