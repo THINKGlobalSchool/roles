@@ -9,16 +9,14 @@
  * @copyright THINK Global School 2010
  * @link http://www.thinkglobalschool.com/
  *
- * @uses $vars['entity'] The entity to add roles to
- * @uses $vars['meta_name'] Optional name for metadata (default to roles)
+ * @uses $vars['name'] Name of the field
+ * @uses $vars['meta_name'] Optional name for metadata (Default to roles)
+ * @uses $vars['label'] Optional label (Default to roles)
  */
 
-$entity = elgg_extract('entity', $vars);
-$meta_name = elgg_extract('meta_name', $vars, 'roles');
-
-if (elgg_instanceof($entity, 'object')) {
-	$selected_roles = $entity->$meta_name;
-}
+$value = elgg_extract('value', $vars);
+$label = elgg_extract('label', $vars, elgg_echo('roles'));
+$name = elgg_extract('name', $vars, 'roles_list');
 
 // Get all site roles
 $roles_entities = get_roles(0);
@@ -29,8 +27,8 @@ foreach($roles_entities as $role) {
 	$roles[$role->title] = $role->guid;
 }
 
-if (empty($selected_roles)) {
-	$selected_roles = array();
+if (empty($value)) {
+	$value = array();
 }
 
 if (!empty($roles)) {
@@ -38,18 +36,16 @@ if (!empty($roles)) {
 		$roles = array($roles);
 	}
 
-	$roles_label = elgg_echo('roles');
-
 	$roles_input = elgg_view('input/checkboxes', array(
 		'options' => $roles,
-		'value' => $selected_roles,
-		'name' => 'roles_list',
+		'value' => $value,
+		'name' => $name,
 		'align' => 'horizontal',
 	));
 
 	echo <<<HTML
 		<div class="roles">
-			<label>$roles_label</label><br />
+			<label>$label</label><br />
 			$roles_input
 			<input type="hidden" name="roles_marker" value="on" />
 		</div>
