@@ -10,12 +10,14 @@
  * @link http://www.thinkglobalschool.com/
  *
  * @uses $vars['entity'] The entity to add roles to
+ * @uses $vars['meta_name'] Optional name for metadata (default to roles)
  */
 
 $entity = elgg_extract('entity', $vars);
+$meta_name = elgg_extract('meta_name', $vars, 'roles');
 
 if (elgg_instanceof($entity, 'object')) {
-	$selected_roles = $entity->roles;
+	$selected_roles = $entity->$meta_name;
 }
 
 // Get all site roles
