@@ -34,17 +34,19 @@ elgg.roles.populated_module = function(event, type, params, value) {
 		var id = $(this).attr('id');
 		var guid = id.substring(id.lastIndexOf('-') + 1);
 		
-		$(this).bind('click', function() {
-			// Load users
-			elgg.roles.load_users(guid);
+		$(this).bind('click', function(event) {
+			if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
+				// Load users
+				elgg.roles.load_users(guid);
 			
-			// Remove selected
-			roles_module.find('li.elgg-item').each(function() {
-				$(this).removeClass('role-state-selected');
-			});
+				// Remove selected
+				roles_module.find('li.elgg-item').each(function() {
+					$(this).removeClass('role-state-selected');
+				});
 			
-			// Select this role
-			$(this).addClass('role-state-selected');
+				// Select this role
+				$(this).addClass('role-state-selected');
+			}
 		});
 	});
 }

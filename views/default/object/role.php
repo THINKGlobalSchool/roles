@@ -64,6 +64,7 @@ HTML;
 } else {
 	// brief view
 	$params = array(
+		'title' => $role->title,
 		'entity' => $role,
 		'metadata' => $metadata,
 	);
