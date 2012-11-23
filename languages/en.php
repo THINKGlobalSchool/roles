@@ -32,6 +32,7 @@ $english = array(
 	'roles:label:hidden' => 'Hide from Role Inputs',
 	'roles:label:yes' => 'Yes',
 	'roles:label:no' => 'No',
+	'roles:label:none' => 'None',
 	
 	// River
 	

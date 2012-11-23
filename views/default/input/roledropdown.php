@@ -10,6 +10,7 @@
  * @link http://www.thinkglobalschool.com/
  *
  * @uses $vars['show_all'] Include an 'All' entry
+ * @uses $vars['show_none'] Include a 'None' entry
  * @uses $vars['show_hidden'] Include hidden roles
  */
 
@@ -21,6 +22,12 @@ $vars['options_values'] = array();
 if ($vars['show_all']) {
 	$vars['options_values'] = array(
 		0 => elgg_echo('all'),
+	);
+}
+
+if ($vars['show_none']) {
+	$vars['options_values'] = array(
+		0 => elgg_echo('roles:label:none'),
 	);
 }
 
