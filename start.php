@@ -35,6 +35,12 @@ function roles_init() {
 	$r_js = elgg_get_simplecache_url('js', 'roles/roles');
 	elgg_register_simplecache_view('js/roles/roles');	
 	elgg_register_js('elgg.roles', $r_js);
+
+	// Register Global Hooks JS library
+	$r_js = elgg_get_simplecache_url('js', 'roles/hooks');
+	elgg_register_simplecache_view('js/roles/hooks');	
+	elgg_register_js('elgg.roles_hooks', $r_js);
+	elgg_load_js('elgg.roles_hooks');
 		
 	// Add submenus
 	elgg_register_event_handler('pagesetup', 'system', 'roles_submenus');
@@ -50,6 +56,12 @@ function roles_init() {
 	
 	// Extend Admin Hover Menu 
 	elgg_register_plugin_hook_handler('register', 'menu:user_hover', 'roles_user_hover_menu_setup', 9999);
+
+	// Register items for tidypics photo list filter
+	elgg_register_plugin_hook_handler('register', 'menu:photos-listing-filter', 'roles_photo_list_menu_setup');
+
+	// Provide roles options when filtering photo lists
+	elgg_register_plugin_hook_handler('listing_filter_options', 'tidypics', 'roles_photo_list_filter_handler');
 	
 	// Register a handler for creating roles
 	elgg_register_event_handler('create', 'object', 'roles_create_event_listener');
@@ -168,6 +180,65 @@ function roles_user_hover_menu_setup($hook, $type, $return, $params) {
 		$return[] = ElggMenuItem::factory($options);
 	}
 	
+	return $return;
+}
+
+/**
+ * Set up tidypics photo listing filter menu
+ */
+function roles_photo_list_menu_setup($hook, $type, $return, $params) {
+	$container_guid = $params['container_guid'];
+	$type = $params['type'];
+
+	if (!$container_guid) {
+		$role_label = 'Role';
+
+		$params = array(
+			'id' => 'photos-listing-role-input',
+			'name' => 'role',
+			'value' => get_input('role'),
+			'show_all' => TRUE,
+		);
+
+		$role_input = elgg_view('input/roledropdown', $params);
+
+		// Search by role label
+		$options = array(
+			'name' => 'photos-listing-role-label',
+			'text' => "<label>{$role_label}:</label>",
+			'href' => false,
+			'priority' => 300,
+		);
+		$return[] = ElggMenuItem::factory($options);
+
+		// Search by role input
+		$options = array(
+			'name' => 'photos-listing-role-container',
+			'text' => $role_input,
+			'href' => false,
+			'priority' => 301,
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+
+	return $return;
+}
+
+/**
+ * Provide roles filtering logic when filtering photo/album lists
+ */
+function roles_photo_list_filter_handler($hook, $type, $return, $params) {
+	if ($role = get_input('role')) {
+		// Build custom query SQL for role members
+		$db_prefix = elgg_get_config('dbprefix');
+
+		$return['selects'][] = 'r2.id';
+
+		$return['joins'][] = "JOIN {$db_prefix}entity_relationships r2 on r2.guid_one = e.owner_guid";
+
+		$return['wheres'][] = "(r2.guid_two = '$role')";
+ 	}
+
 	return $return;
 }
 
