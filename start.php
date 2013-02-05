@@ -198,6 +198,7 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
 			'name' => 'role',
 			'value' => get_input('role'),
 			'show_all' => TRUE,
+			'style' => 'width:90px',
 		);
 
 		$role_input = elgg_view('input/roledropdown', $params);
