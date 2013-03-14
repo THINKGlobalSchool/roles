@@ -28,6 +28,7 @@ $metadata = elgg_view_menu('entity', array(
 ));
 
 if ($full) {
+	forward();
 	/*Debug
 	$role->add(get_user_by_username('james'));
 	var_dump(get_members_of_access_collection($role->member_acl));

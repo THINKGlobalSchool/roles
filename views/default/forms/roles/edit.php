@@ -51,6 +51,9 @@ $submit_input = elgg_view('input/submit', array(
 	'value' => elgg_echo('save')
 ));	
 
+// Add a view to extend the role form
+$role_form_extend = elgg_view('forms/roles/edit/extend', $vars);
+
 // Build Form Body
 $form_body = <<<HTML
 
@@ -67,6 +70,7 @@ $form_body = <<<HTML
 		<label>$hidden_label</label>
 		$hidden_input
 	</div><br />
+	$role_form_extend
 	<div class='elgg-foot'>
 		$submit_input
 		$entity_hidden
