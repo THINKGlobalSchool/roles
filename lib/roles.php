@@ -168,15 +168,26 @@ function roles_remove_user($role_guid, $user_guid) {
  * @param bool $count      Return the users (false) or the count of them (true)
  * @return array
  */
-function get_roles($limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALUE, $count = FALSE) {
-	return elgg_get_entities(array(
+function get_roles($limit = 10, $offset = 0, $site_guid = ELGG_ENTITIES_ANY_VALUE, $count = FALSE, $alphabetical = FALSE) {
+	$options = array(
 		'type' => 'object',
 		'subtype' => 'role',
 		'limit' => $limit,
 		'offset' => $offset,
 		'count' => $count,
 		'site_guid' => $site_guid
-	));
+	);
+
+	if ($alphabetical) {
+		$dbprefix = elgg_get_config('dbprefix');
+		$options['joins'] = array(
+			"JOIN {$dbprefix}objects_entity oe on e.guid = oe.guid"
+		);
+
+		$options['order_by'] = 'oe.title';
+	}
+
+	return elgg_get_entities($options);
 }
 
 /**
