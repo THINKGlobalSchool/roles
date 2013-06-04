@@ -15,7 +15,7 @@
  */
 
 // Get all site roles
-$roles_entities = get_roles(0);
+$roles_entities = get_roles(0, 0, ELGG_ENTITIES_ANY_VALUE, FALSE, TRUE);
 
 $vars['options_values'] = array();
 
