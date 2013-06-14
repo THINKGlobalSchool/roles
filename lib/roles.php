@@ -78,17 +78,18 @@ function roles_prepare_form_vars($role= null) {
  * @param int  $offset     The offset
  * @param int  $site_guid  The site
  * @param bool $count      Return the users (false) or the count of them (true)
+ * @param bool $alphabetical Sort the users alphabetically
  *
  * @return mixed
  */
-function roles_get_members($role_guid, $limit = 10, $offset = 0, $site_guid = 0, $count = false) {
+function roles_get_members($role_guid, $limit = 10, $offset = 0, $site_guid = 0, $count = false, $alphabetical = false) {
 
 	// in 1.7 0 means "not set."  rewrite to make sense.
 	if (!$site_guid) {
 		$site_guid = ELGG_ENTITIES_ANY_VALUE;
 	}
-		
-	return elgg_get_entities_from_relationship(array(
+
+	$options = array(
 		'relationship' => ROLE_RELATIONSHIP,
 		'relationship_guid' => $role_guid,
 		'inverse_relationship' => TRUE,
@@ -97,7 +98,18 @@ function roles_get_members($role_guid, $limit = 10, $offset = 0, $site_guid = 0,
 		'offset' => $offset,
 		'count' => $count,
 		'site_guid' => $site_guid
-	));
+	);
+
+	if ($alphabetical) {
+		$dbprefix = elgg_get_config('dbprefix');
+		$options['joins'] = array(
+			"JOIN {$dbprefix}users_entity ue on e.guid = ue.guid"
+		);
+
+		$options['order_by'] = 'ue.name';
+	}
+		
+	return elgg_get_entities_from_relationship($options);
 }
 
 /**
