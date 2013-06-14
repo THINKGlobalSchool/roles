@@ -39,8 +39,8 @@ class ElggRole extends ElggObject {
 	 *
 	 * @return mixed
 	 */
-	public function getMembers($limit = 10, $offset = 0, $count = false) {
-		return roles_get_members($this->getGUID(), $limit, $offset, 0, $count);
+	public function getMembers($limit = 10, $offset = 0, $count = false, $alphabetical = false) {
+		return roles_get_members($this->getGUID(), $limit, $offset, 0, $count, $alphabetical);
 	}
 
 	/**
