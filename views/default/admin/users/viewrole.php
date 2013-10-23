@@ -9,7 +9,7 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-elgg_load_css('elgg.roles');
+elgg_load_css('elgg.roles.admin');
 
 $role = get_entity(get_input('guid'));
 

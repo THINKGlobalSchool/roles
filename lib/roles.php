@@ -50,6 +50,7 @@ function roles_prepare_form_vars($role= null) {
 		'description' => '',
 		'guid' => NULL,
 		'hidden' => '',
+		'dashboard' => ''
 	);
 
 	if ($role) {
@@ -290,4 +291,31 @@ function get_user_roles_without($user, $limit = 10, $offset = 0, $site_guid = EL
 			)";
 	
 	return elgg_get_entities($options);
+}
+
+/**
+ * Helper function to grab user dashboard roles
+ * 
+ * @param  int        $user_guid  The user guid (if not supplied, returns all roles)
+ * @return array
+ */
+function get_dashboard_roles($user_guid = 0) {
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'role',
+		'limit' => 0,
+		'metadata_name' => 'dashboard',
+		'metadata_value' => 1,
+	);
+
+	if ($user_guid) {
+		$options['relationship'] = ROLE_RELATIONSHIP;
+		$options['relationship_guid'] = $user_guid;
+		$options['inverse_relationship'] = FALSE;
+		$roles = elgg_get_entities_from_relationship($options);
+	} else {
+		$roles = elgg_get_entities_from_metadata($options);
+	}
+
+	return $roles;
 }
