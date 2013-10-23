@@ -1,6 +1,6 @@
 <?php
 /**
- * TGS Roles CSS
+ * TGS Roles General CSS
  * 
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -10,31 +10,8 @@
  * 
  */
 ?>
-li.elgg-item {
-	border-bottom: 1px solid #ddd;
-	margin: 0;
+/** Roles homepage **/
+.elgg-layout-one-sidebar-roles-home {
+	padding: 20px 5px 5px;
 }
 
-li.elgg-item:hover {
-	background: #eee;
-}
-
-.roles-module {
-	width: 47%;
-	float: left;
-}
-
-#user-list {
-	padding-left: 5px;
-}
-
-.elgg-menu-user-role-menu {
-	color: #AAAAAA;
-    float: right;
-    font-size: 90%;
-    margin-left: 15px;
-}
-
-.role-state-selected, .role-state-selected:hover {
-	background: #ccc !important;
-}

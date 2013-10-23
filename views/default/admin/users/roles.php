@@ -9,7 +9,7 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-elgg_load_css('elgg.roles');
+elgg_load_css('elgg.roles.admin');
 elgg_load_js('elgg.roles');
 elgg_load_js('elgg.userpicker');
 elgg_load_js('elgg.userpicker.html');

@@ -9,5 +9,5 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-elgg_load_css('elgg.roles');
+elgg_load_css('elgg.roles.admin');
 echo roles_get_edit_content('add');

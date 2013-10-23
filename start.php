@@ -5,11 +5,12 @@
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013		
  * @link http://www.thinkglobalschool.com/
  * 
  * @TODO 
- * - Determin permissions, ie: is it terrible if users can see whos in a role?
+ * - Multiple role widget
+ * - Default/auto widgets
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
@@ -31,6 +32,11 @@ function roles_init() {
 	elgg_register_simplecache_view('css/roles/css');	
 	elgg_register_css('elgg.roles', $r_css);
 		
+	// Register Admin CSS
+	$r_css = elgg_get_simplecache_url('css', 'roles/admin');
+	elgg_register_simplecache_view('css/roles/admin');	
+	elgg_register_css('elgg.roles.admin', $r_css);
+
 	// Register JS library
 	$r_js = elgg_get_simplecache_url('js', 'roles/roles');
 	elgg_register_simplecache_view('js/roles/roles');	
@@ -45,8 +51,9 @@ function roles_init() {
 	// Add submenus
 	elgg_register_event_handler('pagesetup', 'system', 'roles_submenus');
 	
-	// Page handler
+	// Page handlers
 	elgg_register_page_handler('roles','roles_page_handler');
+	elgg_register_page_handler('home', 'roles_home_page_handler');
 					
 	// Register URL handler
 	elgg_register_entity_url_handler('object', 'role', 'role_url');		
@@ -59,6 +66,9 @@ function roles_init() {
 
 	// Register items for tidypics photo list filter
 	elgg_register_plugin_hook_handler('register', 'menu:photos-listing-filter', 'roles_photo_list_menu_setup');
+
+	// Modify widget menu
+	elgg_register_plugin_hook_handler('register', 'menu:widget', 'roles_widget_menu_setup');
 
 	// Provide roles options when filtering photo lists
 	elgg_register_plugin_hook_handler('listing_filter_options', 'tidypics', 'roles_photo_list_filter_handler');
@@ -85,7 +95,18 @@ function roles_init() {
 	elgg_register_action('roles/delete', "$action_base/delete.php", 'admin');
 	elgg_register_action('roles/removeuser', "$action_base/removeuser.php", 'admin');
 	elgg_register_action('roles/adduser', "$action_base/adduser.php", 'admin');
-	
+	elgg_register_action('roles/addwidget', "$action_base/addwidget.php", 'admin');
+	elgg_register_action('roles/removewidget', "$action_base/addwidget.php", 'admin');
+
+
+	// Whitelist ajax views
+	elgg_register_ajax_view('roles/modules/dashboard_roles');
+
+	// Widgets can only have one handler, so this will be unique
+	// elgg_register_widget_type('test_1', 'test widget 1', 'test desc', 'rolewidget');
+	// elgg_register_widget_type('test_2', 'test widget 2', 'test desc', 'rolewidget');
+	// elgg_register_widget_type('test_3', 'test widget 3', 'test desc', 'rolewidget');
+
 	// Register one once for subtype
 	run_function_once("roles_run_once");
 
@@ -103,10 +124,68 @@ function roles_page_handler($page) {
 			$guid = sanitise_string(get_input('guid'));
 			echo elgg_view('roles/users', array('guid' => $guid));
 			break;
+		case 'loadwidgets':
+			$guid = sanitise_string(get_input('guid'));
+			echo elgg_view('roles/widgets', array('guid' => $guid));
+			break;
 		default: 
 			return FALSE;
 	}
 	return TRUE;
+}
+
+/**
+ * Home Page Handler
+ *
+ * @param array $page From the page_handler function
+ * @return true|false Depending on success
+ *
+ */
+function roles_home_page_handler($page) {
+	// Logged in users only
+	gatekeeper();
+
+	if ($role_guid = get_input('role')) {
+		$role = get_entity($role_guid);
+		if (!elgg_instanceof($role, 'object', 'role') || !$role->dashboard) {
+			register_error(elgg_echo('roles:error:invaliddashboard'));
+			forward();
+		}
+
+
+	} else {
+		$user_roles = get_dashboard_roles(elgg_get_logged_in_user_guid());
+		// Check for roles
+		if (count($user_roles) == 0) {
+			$dashboard_roles = get_dashboard_roles();
+			if (count($dashboard_roles) >= 1) {
+				// Grab the first available role
+				$role_guid = $dashboard_roles[0]->guid;
+			}
+		} else {
+			// Load first role for single/multiple
+			$role_guid = $user_roles[0]->guid;
+		}
+	}
+
+	// Still no roles? Show an error and get out of here
+	if (!$role_guid) {
+		register_error(elgg_echo('roles:error:invaliddashboard'));
+		forward('activity');
+	}
+
+	elgg_load_css('elgg.roles');
+
+	$widgets = elgg_get_widgets($role_guid, 'rolewidget');
+
+	$params = array(
+		'widgets' => $widgets,
+		'role_guid' => $role_guid,
+		'class' => 'elgg-layout-one-sidebar-roles-home'
+	);
+	set_input('hide_widget_controls', TRUE);
+	$body = elgg_view_layout('role_widgets', $params);
+	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
 }
 
 /**
@@ -125,6 +204,7 @@ function role_url($entity) {
 function roles_submenus() {
 	if (elgg_in_context('admin')) {
 		elgg_register_admin_menu_item('administer', 'roles', 'users');
+		elgg_register_admin_menu_item('administer', 'dashboard', 'users');
 	}
 }
 
@@ -226,6 +306,22 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
 }
 
 /**
+ * Modify widget menu
+ */
+function roles_widget_menu_setup($hook, $type, $return, $params) {
+	if (get_input('hide_widget_controls')) {
+		$remove = array('delete', 'settings');
+		foreach ($return as $idx => $item) {
+			if (in_array($item->getName(), $remove)) {
+				unset($return[$idx]);
+			}
+		}
+	}
+
+	return $return;
+}
+
+/**
  * Provide roles filtering logic when filtering photo/album lists
  */
 function roles_photo_list_filter_handler($hook, $type, $return, $params) {
@@ -256,8 +352,6 @@ function roles_create_event_listener($event, $object_type, $object) {
 			} catch (DatabaseException $e) {
 			
 			}
-			//error_log("role-debug: Create Event Fired | Created ID: $role_acl");
-			//error_log("role-debug: Members: " . count(get_members_of_access_collection($role_acl)));
 		} else {
 			return FALSE;
 		}
@@ -270,11 +364,7 @@ function roles_create_event_listener($event, $object_type, $object) {
  */
 function roles_delete_event_listener($event, $object_type, $object) {
 	if (elgg_instanceof($object, 'object', 'role')) {
-		//error_log("role-debug: Delete Event Fired | ID: {$object->member_acl}");
-		//error_log("role-debug: Members Before: " . count(get_members_of_access_collection($object->member_acl)));
 		delete_access_collection($object->member_acl);
-		//error_log("role-debug: Delete Event | Deleted: {$object->member_acl}");
-		//error_log("role-debug: Members After: " . count(get_members_of_access_collection($object->member_acl)));
 	}
 	return TRUE;
 }

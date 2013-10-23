@@ -14,6 +14,7 @@
 $title = get_input('title');
 $description = get_input('description');
 $hidden = get_input('hidden', 0);
+$dashboard = get_input('dashboard', 0);
 $role_guid = get_input('role_guid', NULL);
 
 // Create Sticky form
@@ -40,6 +41,7 @@ if (!$role_guid) {
 $role->title = $title;
 $role->description = $description;
 $role->hidden = $hidden;
+$role->dashboard = $dashboard;
 
 // Try saving
 if (!$role->save()) {
@@ -52,4 +54,4 @@ if (!$role->save()) {
 elgg_clear_sticky_form('role-edit-form');
 
 system_message(elgg_echo('roles:success:save'));
-forward(elgg_get_site_url() . 'admin/users/roles');
+forward(elgg_get_site_url() . 'admin/users/editrole?guid=' . $role_guid);
