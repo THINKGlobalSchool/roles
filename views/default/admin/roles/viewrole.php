@@ -13,7 +13,7 @@ elgg_load_css('elgg.roles.admin');
 
 $role = get_entity(get_input('guid'));
 
-elgg_push_breadcrumb(elgg_echo('admin:users:roles'), elgg_get_site_url() . 'admin/users/roles');
+elgg_push_breadcrumb(elgg_echo('admin:roles:manage'), elgg_get_site_url() . 'admin/roles/manage');
 
 if (elgg_instanceof($role, 'object', 'role')) {
 	$content = elgg_view_entity($role, array('full_view' => TRUE));

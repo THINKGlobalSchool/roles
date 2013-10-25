@@ -2,7 +2,7 @@
 /**
  * Default widgets landing page.
  *
- * OVERRIDE! 
+ * OVERRIDE! (includes exact match parameter)
  *
  * @package Elgg.Core
  * @subpackage Administration.DefaultWidgets
