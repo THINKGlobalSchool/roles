@@ -11,6 +11,9 @@
  * @TODO 
  * - Multiple role widget
  * - Default/auto widgets
+ *
+ * OVERRIDES:
+ * - admin/appearance/default_widgets
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
@@ -73,6 +76,9 @@ function roles_init() {
 	// Provide roles options when filtering photo lists
 	elgg_register_plugin_hook_handler('listing_filter_options', 'tidypics', 'roles_photo_list_filter_handler');
 	
+	// Register handler for default roles widgets
+	elgg_register_plugin_hook_handler('get_list', 'default_widgets', 'roles_default_widgets_hook');
+
 	// Register a handler for creating roles
 	elgg_register_event_handler('create', 'object', 'roles_create_event_listener');
 
@@ -335,6 +341,24 @@ function roles_photo_list_filter_handler($hook, $type, $return, $params) {
 
 		$return['wheres'][] = "(r2.guid_two = '$role')";
  	}
+
+	return $return;
+}
+
+/**
+ * Register profile widgets with default widgets
+ */
+function roles_default_widgets_hook($hook, $type, $return) {
+	$return[] = array(
+		'name' => elgg_echo('admin:users:dashboard'),
+		'widget_context' => 'rolewidget',
+		'widget_columns' => 2,
+		'exact_match' => TRUE,
+
+		'event' => 'update',
+		'entity_type' => 'object',
+		'entity_subtype' => 'role',
+	);
 
 	return $return;
 }
