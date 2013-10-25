@@ -15,6 +15,7 @@ elgg.provide('elgg.roles');
 
 elgg.roles.getUsersURL = 'roles/loadusers';
 elgg.roles.getWidgetsURL = 'roles/loadwidgets';
+elgg.roles.getTabsURL = 'roles/loadtabs';
 
 // Init function 
 elgg.roles.init = function() {
@@ -29,11 +30,14 @@ elgg.roles.init = function() {
 
 	// Init widget delete
 	$('a.elgg-widget-delete-button').live('click', elgg.ui.widgets.remove);
+
+	// Init roles assign button
+	$('.roles-assign-dashboard-tab, .roles-unassign-dashboard-tab').live('click', elgg.roles.assign_tab);
 }
 
 elgg.roles.populated_module = function(event, type, params, value) {
-	var roles_module = $('#role-list');
-	roles_module.find('li.elgg-item').each(function() {
+	var $role_module = $('#role-list');
+	$role_module.find('li.elgg-item').each(function() {
 		// Extract guid from list item
 		var id = $(this).attr('id');
 		var guid = id.substring(id.lastIndexOf('-') + 1);
@@ -44,7 +48,7 @@ elgg.roles.populated_module = function(event, type, params, value) {
 				elgg.roles.load_users(guid);
 			
 				// Remove selected
-				roles_module.find('li.elgg-item').each(function() {
+				$role_module.find('li.elgg-item').each(function() {
 					$(this).removeClass('role-state-selected');
 				});
 			
@@ -57,26 +61,52 @@ elgg.roles.populated_module = function(event, type, params, value) {
 
 
 elgg.roles.generic_populated_module = function(event, type, params, value) {
-	var roles_module = $('#role-list');
-	roles_module.find('li.elgg-item').each(function() {
-		// Extract guid from list item
-		var id = $(this).attr('id');
-		var guid = id.substring(id.lastIndexOf('-') + 1);
-		
-		$(this).bind('click', function(event) {
-			if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
-				elgg.roles.load_widgets(guid);
+	var $tabs_module = $('#tab-list');
+	var $role_module = $('#role-list');
 
-				// Remove selected
-				roles_module.find('li.elgg-item').each(function() {
-					$(this).removeClass('role-state-selected');
-				});
+	if ($tabs_module.length > 0) {
+		$tabs_module.find('li.elgg-item').each(function() {
+			// Extract guid from list item
+			var id = $(this).attr('id');
+			var guid = id.substring(id.lastIndexOf('-') + 1);
 			
-				// Select this role
-				$(this).addClass('role-state-selected');
-			}
+			$(this).bind('click', function(event) {
+				if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
+					elgg.roles.load_widgets(guid);
+
+					// Remove selected
+					$tabs_module.find('li.elgg-item').each(function() {
+						$(this).removeClass('role-state-selected');
+					});
+				
+					// Select this role
+					$(this).addClass('role-state-selected');
+				}
+			});
 		});
-	});
+	} else if ($role_module.length > 0) {
+		$role_module.find('li.elgg-item').each(function() {
+			// Extract guid from list item
+			var id = $(this).attr('id');
+			var guid = id.substring(id.lastIndexOf('-') + 1);
+			
+			$(this).bind('click', function(event) {
+				if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
+					elgg.roles.load_tabs(guid);
+
+					// Remove selected
+					$role_module.find('li.elgg-item').each(function() {
+						$(this).removeClass('role-state-selected');
+					});
+				
+					// Select this role
+					$(this).addClass('role-state-selected');
+				}
+			});
+		});
+	}
+
+
 }
 
 // Load users by role
@@ -94,22 +124,22 @@ elgg.roles.load_users = function(role_guid) {
 	});
 }
 
-// Load widgets by role
-elgg.roles.load_widgets = function(role_guid) {
+// Load widgets by tab
+elgg.roles.load_widgets = function(tab_guid) {
 	// Spinner
-	$('#widget-list').addClass('elgg-ajax-loader');
-	$('#widget-list').html('');
+	$('#widget-list-output').addClass('elgg-ajax-loader');
+	$('#widget-list-output').html('');
 	// Load
 	elgg.get(elgg.roles.getWidgetsURL, {
-		data: {guid: role_guid}, 
+		data: {guid: tab_guid}, 
 		success: function(data) {
-			$('#widget-list').removeClass('elgg-ajax-loader');
-			$('#widget-list').html(data);
+			$('#widget-list-output').removeClass('elgg-ajax-loader');
+			$('#widget-list-output').html(data);
 
 			// Bind addable widgets
 			$('.elgg-widgets-add-panel li.elgg-state-available').bind(
 				'click', 
-				{role_guid: role_guid},
+				{tab_guid: tab_guid},
 				elgg.roles.add_widget
 			);
 
@@ -128,11 +158,68 @@ elgg.roles.load_widgets = function(role_guid) {
 	});
 }
 
+// Load tabs for role dashboards
+elgg.roles.load_tabs = function(role_guid) {
+	// Spinner
+	$('#tab-list-output').addClass('elgg-ajax-loader');
+	$('#tab-list-output').html('');
+	// Load
+	elgg.get(elgg.roles.getTabsURL, {
+		data: {guid: role_guid}, 
+		success: function(data) {
+			$('#tab-list-output').removeClass('elgg-ajax-loader');
+			$('#tab-list-output').html(data);
+		},
+	});
+}
+
+/**
+ * Roles assign tab click handler
+ */
+elgg.roles.assign_tab = function(event) {
+	var $_this = $(this);
+	elgg.action($(this).attr('href'), {
+		data: {},
+		success: function(data) {
+			if (data.status == -1) {
+				// Error.. do nothing
+			} else {
+				// Switch links/classes
+				if ($_this.hasClass('roles-assign-dashboard-tab')) {
+					// Replace classes
+					$_this.removeClass('roles-assign-dashboard-tab');
+					$_this.addClass('roles-unassign-dashboard-tab');
+
+					// Replace text/title
+					$_this.html(elgg.echo('remove'));
+					$_this.attr('title', elgg.echo('remove'));
+
+					// Replace link
+				 	$_this.attr('href', $_this.attr('href').replace("roles/assigntab", "roles/unassigntab"));
+				} else if ($_this.hasClass('roles-unassign-dashboard-tab')) {
+					// Replace classes
+					$_this.removeClass('roles-unassign-dashboard-tab');
+					$_this.addClass('roles-assign-dashboard-tab');
+
+					// Replace text/title
+					$_this.html(elgg.echo('add'));
+					$_this.attr('title', elgg.echo('add'));
+
+					// Replace link
+					$_this.attr('href', $_this.attr('href').replace("roles/unassigntab", "roles/assigntab"));
+				}
+			}
+		}
+	});
+	
+	event.preventDefault();	
+}
+
 /**
  * Adds a new widget to given role
  */
 elgg.roles.add_widget = function(event) {
-	var role_guid = event.data.role_guid;
+	var tab_guid = event.data.tab_guid;
 
 	// elgg-widget-type-<type>
 	var type = $(this).attr('id');
@@ -149,7 +236,7 @@ elgg.roles.add_widget = function(event) {
 	elgg.action('widgets/add', {
 		data: {
 			handler: type,
-			owner_guid: role_guid,
+			owner_guid: tab_guid,
 			context: $("input[name='widget_context']").val(),
 			default_widgets: $("input[name='default_widgets']").val() || 0
 		},
@@ -190,7 +277,6 @@ elgg.roles.remove_user = function(event) {
 elgg.roles.add_user = function(event) {
 	var data = $('#roles-add-user-form').serialize();
 	var role_guid = $('#roles-add-user-form input[name=role_guid]').val();
-	console.log(role_guid);
 
 	elgg.action('roles/adduser', {
 		data: data,

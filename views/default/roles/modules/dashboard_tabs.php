@@ -1,6 +1,6 @@
 <?php
 /**
- * TGS Roles Dashboard list Modules
+ * TGS Roles Dashboard tabs module
  * 
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -12,17 +12,15 @@
 
 $options = array(
 	'type' => 'object',
-	'subtype' => 'role',
+	'subtype' => 'role_dashboard_tab',
 	'limit' => 10,
 	'full_view' => FALSE,
-	'metadata_name' => 'dashboard',
-	'metadata_value' => 1,
 );
 
 $content = elgg_list_entities_from_metadata($options);
 
 if (!$content) {
-	$content = elgg_echo('roles:label:noroles');
+	$content = elgg_echo('roles:label:notabs');
 }
 
 echo $content;

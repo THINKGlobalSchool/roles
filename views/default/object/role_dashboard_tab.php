@@ -1,6 +1,6 @@
 <?php
 /**
- * TGS Roles Object View
+ * TGS Roles Dashboard Tab Object View
  * 
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -12,16 +12,16 @@
 
 $full = elgg_extract('full_view', $vars, FALSE);
 
-$role = (isset($vars['entity'])) ? $vars['entity'] : FALSE;
+$tab = (isset($vars['entity'])) ? $vars['entity'] : FALSE;
 
-if (!$role) {
+if (!$tab) {
 	return '';
 }
 
-$linked_title = "<h3 style='padding-top: 14px;'><a href=\"{$role->getURL()}\" title=\"" . htmlentities($role->title) . "\">{$role->title}</a></h3>";
+$linked_title = "<h3 style='padding-top: 14px;'><a href=\"{$tab->getURL()}\" title=\"" . htmlentities($tab->title) . "\">{$tab->title}</a></h3>";
 
 $metadata = elgg_view_menu('entity', array(
-	'entity' => $role,
+	'entity' => $tab,
 	'handler' => 'roles',
 	'sort_by' => 'priority',
 	'class' => 'elgg-menu-hz',
@@ -32,8 +32,8 @@ if ($full) {
 } else {
 	// brief view
 	$params = array(
-		'title' => $role->title,
-		'entity' => $role,
+		'title' => $tab->title,
+		'entity' => $tab,
 		'metadata' => $metadata,
 	);
 	$list_body = elgg_view('object/elements/summary', $params);

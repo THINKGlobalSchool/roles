@@ -20,8 +20,8 @@ $show_add_panel = elgg_extract('show_add_panel', $vars, false);
 $role_guid = elgg_extract('role_guid', $vars, false);
 $role = get_entity($role_guid);
 
-if (!elgg_instanceof($role, 'object', 'role')) {
-	echo elgg_echo('roles:error:notfound');
+if (!elgg_instanceof($role, 'object', 'role_dashboard_tab')) {
+	echo elgg_echo('roles:error:tabnotfound');
 	return;
 }
 

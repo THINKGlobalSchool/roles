@@ -13,11 +13,15 @@
 $english = array(
 	// Generic
 	'roles' => 'Roles',
-	'admin:users:roles' => 'Roles',
-	'admin:users:addrole' => 'Add Role',
-	'admin:users:viewrole' => 'View Role',
-	'admin:users:editrole' => 'Edit Role',
-	'admin:users:dashboard' => 'Role Dashboards',
+	'admin:roles' => 'Roles',
+	'admin:roles:manage' => 'Manage',
+	'admin:roles:addrole' => 'Add Role',
+	'admin:roles:viewrole' => 'View Role',
+	'admin:roles:editrole' => 'Edit Role',
+	'admin:roles:dashboard' => 'Role Dashboards',
+	'admin:roles:tabs' => 'Dashboard Tabs',
+	'admin:roles:edittab' => 'Edit Dashboard Tab',
+	'admin:roles:addtab' => 'Add Dashboard Tab',
 	'roles:role' => 'Role',
 	'item:object:role' => 'Roles',
 	
@@ -25,6 +29,7 @@ $english = array(
 	
 	// Labels 
 	'roles:label:new' => 'New Role',
+	'roles:label:newtab' => 'New Dashboard Tab',
 	'roles:label:currentroles' => 'Current Roles',
 	'roles:label:users' => 'Users',
 	'roles:label:adduser' => 'Add User',
@@ -36,6 +41,8 @@ $english = array(
 	'roles:label:currentwidgets' => 'Current Widgets',
 	'roles:label:defaultwidgets' => 'Default Widgets',
 	'roles:label:widgetadddescription' => 'Click on any widget button below to add/remove it from the role.',
+	'roles:label:noroles' => 'No Roles',
+	'roles:label:notabs' => 'No Tabs',
 	'roles:label:nowidgets' => 'No Widgets',
 	'roles:label:yes' => 'Yes',
 	'roles:label:no' => 'No',
@@ -46,9 +53,13 @@ $english = array(
 	// Messages
 	'roles:error:requiredfields' => 'One or more required fields are missing',
 	'roles:error:delete' => 'There was an error deleting the Role',
+	'roles:error:deletetab' => 'There was an error deleting the Dashboard Tab',
 	'roles:error:edit' => 'There was an error editing the Role',
+	'roles:error:edittab' => 'There was an error editing the Dashboard Tab',
 	'roles:error:save' => 'There was an error saving the Role',
+	'roles:error:savetab' => 'There was an error saving the Dashboard Tab',
 	'roles:error:notfound' => 'Role not found',
+	'roles:error:tabnotfound' => 'Dashboard Tab not found',
 	'roles:error:invaliduser' => 'Invalid User (%s)',
 	'roles:error:userrequired' => 'Need at least one user',
 	'roles:error:invalidrole' => 'Invalid Role',
@@ -56,10 +67,16 @@ $english = array(
 	'roles:error:add' => 'There was an error adding the user to the role',
 	'roles:error:existing' => '%s is already a member of the role %s',
 	'roles:error:invaliddashboard' => 'Invalid role or missing dashbaord',
+	'roles:error:tabassigned' => 'There was an error assigning the dashbboard tab',
+	'roles:error:tabunassigned' => 'There was an error unassigning the dashbboard tab',
 	'roles:success:add' => 'Successfully added user to role %s',
 	'roles:success:remove' => 'Successfully removed user from role %s',
 	'roles:success:save' => 'Successfully Saved Role',
+	'roles:success:savetab' => 'Successfully Saved Dashboard Tab',
 	'roles:success:delete' => 'Successfully Deleted Role',
+	'roles:success:deletetab' => 'Successfully Deleted Dashboard Tab',
+	'roles:success:tabassigned' => 'Successfully Assigned Dashboard Tab',
+	'roles:success:tabunassigned' => 'Successfully Unassigned Dashboard Tab',
 	'roles:removeconfirm' => 'Are you sure you want to remove this user from the role?',
 
 

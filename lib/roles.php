@@ -12,9 +12,11 @@
 
 /** CONTENT **/
 
-/** Get roles edit/add form **/
+/**
+ * Get roles edit/add form
+ */
 function roles_get_edit_content($type, $guid = NULL) {	
-	elgg_push_breadcrumb(elgg_echo('admin:users:roles'), elgg_get_site_url() . 'admin/users/roles');
+	elgg_push_breadcrumb(elgg_echo('admin:roles:manage'), elgg_get_site_url() . 'admin/roles/manage');
 	if ($type == 'edit') {
 		$role = get_entity($guid);
 		elgg_push_breadcrumb($role->title, $role->getURL());
@@ -37,6 +39,32 @@ function roles_get_edit_content($type, $guid = NULL) {
 }
 
 /**
+ * Dashbaord tab edit content form
+ */
+function roles_dashboard_tab_get_edit_content($type, $guid = NULL) {
+	elgg_push_breadcrumb(elgg_echo('admin:roles:tabs'), elgg_get_site_url() . 'admin/roles/tabs');
+	if ($type == 'edit') {
+		$tab = get_entity($guid);
+		elgg_push_breadcrumb($tab->title, $tab->getURL());
+		elgg_push_breadcrumb(elgg_echo('edit'));
+		if (!elgg_instanceof($tab, 'object', 'role_dashboard_tab')) {
+			forward(REFERER);
+		}
+	} else {
+		elgg_push_breadcrumb(elgg_echo('Add'));
+		$tab = null;
+	}
+	
+	$form_vars = roles_dashboard_tab_prepare_form_vars($tab);
+	
+	$content = elgg_view('navigation/breadcrumbs');
+	
+	$content .= elgg_view_form('roles/edittab', array('name' => 'dashboard-tab-edit-form', 'id' => 'dashboard-tab-edit-form'), $form_vars);
+	
+	echo $content;
+}
+
+/**
  * Prepare the add/edit form variables
  *
  * @param ElggRole $role
@@ -50,7 +78,7 @@ function roles_prepare_form_vars($role= null) {
 		'description' => '',
 		'guid' => NULL,
 		'hidden' => '',
-		'dashboard' => ''
+		'dashboard' => NULL
 	);
 
 	if ($role) {
@@ -69,6 +97,39 @@ function roles_prepare_form_vars($role= null) {
 
 	return $values;
 }
+
+/**
+ * Prepare the add/edit form variables for dashboard tabs
+ *
+ * @param ElggObject $tab
+ * @return array
+ */
+function roles_dashboard_tab_prepare_form_vars($tab = null) {
+
+	// input names => defaults
+	$values = array(
+		'title' => '',
+		'description' => '',
+		'guid' => NULL,
+	);
+
+	if ($tab) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = $tab->$field;
+		}
+	}
+
+	if (elgg_is_sticky_form('dashboard-tab-edit-form')) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = elgg_get_sticky_value('dashboard-tab-edit-form', $field);
+		}
+	}
+
+	elgg_clear_sticky_form('dashboard-tab-edit-form');
+
+	return $values;
+}
+
 
 /** HELPERS **/
 /**

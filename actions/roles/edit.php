@@ -54,4 +54,4 @@ if (!$role->save()) {
 elgg_clear_sticky_form('role-edit-form');
 
 system_message(elgg_echo('roles:success:save'));
-forward(elgg_get_site_url() . 'admin/users/editrole?guid=' . $role_guid);
+forward(elgg_get_site_url() . 'admin/roles/editrole?guid=' . $role->guid);

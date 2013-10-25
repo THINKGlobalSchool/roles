@@ -25,10 +25,10 @@ li.elgg-item:hover {
 }
 
 .roles-widget-module {
-	width: 100%;
+	/*width: 100%;*/
 }
 
-#user-list, #widget-list {
+#user-list, #tab-list-output {
 	padding-left: 5px;
 }
 
@@ -43,6 +43,11 @@ li.elgg-item:hover {
 	background: #ccc !important;
 }
 
-#widget-list #widgets-add-panel.hidden {
+#widget-list-output #widgets-add-panel.hidden {
 	display: block;
+}
+
+#tab-list-output .elgg-menu-item-add a,
+#tab-list-output .elgg-menu-item-remove a {
+	color: #FFFFFF;
 }

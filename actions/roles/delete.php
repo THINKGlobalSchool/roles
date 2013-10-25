@@ -19,7 +19,7 @@ if (elgg_instanceof($role, 'object', 'role')) {
 	if ($role->delete()) {
 		// Success
 		system_message(elgg_echo('roles:success:delete'));
-		forward('admin/users/roles');
+		forward('admin/roles/manage');
 		
 	} else {
 		// Error
