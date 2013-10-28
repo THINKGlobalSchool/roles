@@ -63,7 +63,7 @@ function roles_init() {
 	elgg_register_entity_url_handler('object', 'role', 'role_url');		
 	
 	// Role entity menu hook
-	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 999);	
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 99999);	
 	
 	// Extend Admin Hover Menu 
 	elgg_register_plugin_hook_handler('register', 'menu:user_hover', 'roles_user_hover_menu_setup', 9999);
@@ -162,6 +162,8 @@ function roles_page_handler($page) {
 function roles_home_page_handler($page) {
 	// Logged in users only
 	gatekeeper();
+
+	elgg_load_js('elgg.roles');
 
 	if ($role_guid = get_input('role')) {
 		$role = get_entity($role_guid);
@@ -397,12 +399,7 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
  */
 function roles_widget_menu_setup($hook, $type, $return, $params) {
 	if (get_input('hide_widget_controls')) {
-		$remove = array('delete', 'settings');
-		foreach ($return as $idx => $item) {
-			if (in_array($item->getName(), $remove)) {
-				unset($return[$idx]);
-			}
-		}
+		return array();
 	}
 
 	return $return;
