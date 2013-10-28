@@ -33,6 +33,9 @@ elgg.roles.init = function() {
 
 	// Init roles assign button
 	$('.roles-assign-dashboard-tab, .roles-unassign-dashboard-tab').live('click', elgg.roles.assign_tab);
+
+	// Disable widget dragging on the home page
+	$('.elgg-layout-one-sidebar-roles-home .elgg-widgets').sortable('disable');
 }
 
 elgg.roles.populated_module = function(event, type, params, value) {
