@@ -47,6 +47,7 @@ $english = array(
 	'roles:label:yes' => 'Yes',
 	'roles:label:no' => 'No',
 	'roles:label:none' => 'None',
+	'roles:label:priority' => 'Priority',
 	
 	// River
 	
@@ -66,7 +67,7 @@ $english = array(
 	'roles:error:remove' => 'There was an error removing the user from the role',
 	'roles:error:add' => 'There was an error adding the user to the role',
 	'roles:error:existing' => '%s is already a member of the role %s',
-	'roles:error:invaliddashboard' => 'Invalid role or missing dashbaord',
+	'roles:error:invaliddashboard' => 'Invalid role or missing tab dashbaord',
 	'roles:error:tabassigned' => 'There was an error assigning the dashbboard tab',
 	'roles:error:tabunassigned' => 'There was an error unassigning the dashbboard tab',
 	'roles:success:add' => 'Successfully added user to role %s',

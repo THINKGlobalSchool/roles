@@ -14,6 +14,7 @@
 $title = get_input('title');
 $description = get_input('description');
 $tab_guid = get_input('tab_guid', NULL);
+$priority = get_input('priority');
 
 // Create Sticky form
 elgg_make_sticky_form('dashboard-tab-edit-form');
@@ -39,6 +40,7 @@ if (!$tab_guid) {
 
 $tab->title = $title;
 $tab->description = $description;
+$tab->priority = $priority;
 
 // Try saving
 if (!$tab->save()) {

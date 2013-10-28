@@ -17,10 +17,10 @@ $show_add_widgets = elgg_extract('show_add_widgets', $vars, false);
 $show_add_panel = elgg_extract('show_add_panel', $vars, false);
 // $show_access = elgg_extract('show_access', $vars, true);
 
-$role_guid = elgg_extract('role_guid', $vars, false);
-$role = get_entity($role_guid);
+$tab_guid = elgg_extract('tab_guid', $vars, false);
+$tab = get_entity($tab_guid);
 
-if (!elgg_instanceof($role, 'object', 'role_dashboard_tab')) {
+if (!elgg_instanceof($tab, 'object', 'role_dashboard_tab')) {
 	echo elgg_echo('roles:error:tabnotfound');
 	return;
 }
@@ -31,7 +31,7 @@ $context = "rolewidget";
 $show_access = false;
 elgg_push_context('widgets');
 
-$widgets = elgg_get_widgets($role->guid, $context);
+$widgets = elgg_get_widgets($tab->guid, $context);
 
 if (elgg_can_edit_widget_layout($context)) {
 	if ($show_add_widgets) {
@@ -48,7 +48,7 @@ if (elgg_can_edit_widget_layout($context)) {
 	}
 }
 
-// echo $vars['content'];
+echo $vars['content'];
 
 echo "<div class='elgg-layout clearfix {$class}'>";
 
