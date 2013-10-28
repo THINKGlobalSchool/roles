@@ -110,6 +110,7 @@ function roles_dashboard_tab_prepare_form_vars($tab = null) {
 	$values = array(
 		'title' => '',
 		'description' => '',
+		'priority' => '',
 		'guid' => NULL,
 	);
 

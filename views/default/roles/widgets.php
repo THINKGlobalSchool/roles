@@ -12,9 +12,9 @@
 
 $guid = elgg_extract('guid', $vars, NULL);
 
-$role = get_entity($guid);
+$tab = get_entity($guid);
 
-if (!$role) {
+if (!$tab) {
 	return;
 }
 
@@ -22,7 +22,7 @@ $widgets = elgg_get_widgets($guid, 'rolewidget');
 
 $params = array(
 	'widgets' => $widgets,
-	'role_guid' => $guid,
+	'tab_guid' => $guid,
 	'show_add_panel' => TRUE,
 );
 

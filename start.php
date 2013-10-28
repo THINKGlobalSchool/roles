@@ -74,6 +74,9 @@ function roles_init() {
 	// Modify widget menu
 	elgg_register_plugin_hook_handler('register', 'menu:widget', 'roles_widget_menu_setup');
 
+	// Set up role tab menu
+	elgg_register_plugin_hook_handler('register', 'menu:role-tab-menu', 'roles_tab_menu_setup');
+
 	// Provide roles options when filtering photo lists
 	elgg_register_plugin_hook_handler('listing_filter_options', 'tidypics', 'roles_photo_list_filter_handler');
 	
@@ -166,8 +169,6 @@ function roles_home_page_handler($page) {
 			register_error(elgg_echo('roles:error:invaliddashboard'));
 			forward();
 		}
-
-
 	} else {
 		$user_roles = get_dashboard_roles(elgg_get_logged_in_user_guid());
 		// Check for roles
@@ -181,23 +182,52 @@ function roles_home_page_handler($page) {
 			// Load first role for single/multiple
 			$role_guid = $user_roles[0]->guid;
 		}
-	}
 
-	// Still no roles? Show an error and get out of here
-	if (!$role_guid) {
-		register_error(elgg_echo('roles:error:invaliddashboard'));
-		forward('activity');
+		$role = get_entity($role_guid);
 	}
 
 	elgg_load_css('elgg.roles');
 
-	$widgets = elgg_get_widgets($role_guid, 'rolewidget');
+	// @TODO function?
+	$tabs = elgg_get_entities_from_relationship(array(
+		'type' => 'object',
+		'subtype' => 'role_dashboard_tab',
+		'relationship' => ROLE_DASHBOARD_TAB_RELATIONSHIP,
+		'relationship_guid' => $role_guid,
+		'inverse_relationship' => TRUE,
+		'limit' => 0,
+		'order_by_metadata' => array(
+			'name' => 'priority',
+			'as' => 'integer',
+			'direction' => 'ASC'
+		) 
+	));
+
+	// Still no roles or tabs? Show an error and get out of here
+	if (!$role_guid || !$tabs) {
+		register_error(elgg_echo('roles:error:invaliddashboard'));
+		forward('activity');
+	}
+
+	$tab_guid = get_input('idx', FALSE);
+
+	if (!$tab_guid) {
+		$tab_guid = $tabs[0]->guid;
+	}
+
+	$menu = elgg_view_menu('role-tab-menu', array(
+		'entity' => $role,
+		'tabs' => $tabs,
+		'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
+		'sort_by' => 'priority'
+	));
 
 	$params = array(
-		'widgets' => $widgets,
-		'role_guid' => $role_guid,
-		'class' => 'elgg-layout-one-sidebar-roles-home'
+		'tab_guid' => $tab_guid,
+		'class' => 'elgg-layout-one-sidebar-roles-home',
+		'content' => $menu
 	);
+
 	set_input('hide_widget_controls', TRUE);
 	$body = elgg_view_layout('role_widgets', $params);
 	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
@@ -377,6 +407,32 @@ function roles_widget_menu_setup($hook, $type, $return, $params) {
 
 	return $return;
 }
+
+/**
+ * Modify widget menu
+ */
+function roles_tab_menu_setup($hook, $type, $return, $params) {
+	$tabs = $params['tabs'];
+
+	$current_tab = get_input('idx', $tabs[0]->guid);
+
+	foreach ($tabs as $tab) {
+
+		$options = array(
+			'name' => 'role-tab-' . $tab->guid,
+			'text' => $tab->title,
+			'href' => '?idx=' . $tab->guid,
+			'selected' => ($current_tab == $tab->guid),
+			'priority' => $tab->priority
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+
+
+
+	return $return;
+}
+
 
 /**
  * Provide roles filtering logic when filtering photo/album lists
