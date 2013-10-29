@@ -63,7 +63,7 @@ function roles_init() {
 	elgg_register_entity_url_handler('object', 'role', 'role_url');		
 	
 	// Role entity menu hook
-	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 99999);	
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 9999);	
 	
 	// Extend Admin Hover Menu 
 	elgg_register_plugin_hook_handler('register', 'menu:user_hover', 'roles_user_hover_menu_setup', 9999);
@@ -72,7 +72,7 @@ function roles_init() {
 	elgg_register_plugin_hook_handler('register', 'menu:photos-listing-filter', 'roles_photo_list_menu_setup');
 
 	// Modify widget menu
-	elgg_register_plugin_hook_handler('register', 'menu:widget', 'roles_widget_menu_setup');
+	elgg_register_plugin_hook_handler('register', 'menu:widget', 'roles_widget_menu_setup', 500);
 
 	// Set up role tab menu
 	elgg_register_plugin_hook_handler('register', 'menu:role-tab-menu', 'roles_tab_menu_setup');
@@ -217,20 +217,23 @@ function roles_home_page_handler($page) {
 		$tab_guid = $tabs[0]->guid;
 	}
 
-	$menu = elgg_view_menu('role-tab-menu', array(
-		'entity' => $role,
-		'tabs' => $tabs,
-		'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
-		'sort_by' => 'priority'
-	));
+	if (count($tabs) > 1) {
+		$menu = elgg_view_menu('role-tab-menu', array(
+			'entity' => $role,
+			'tabs' => $tabs,
+			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
+			'sort_by' => 'priority'
+		));
+		$top_class = "border-top";
+	}
 
 	$params = array(
 		'tab_guid' => $tab_guid,
-		'class' => 'elgg-layout-one-sidebar-roles-home',
+		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
 		'content' => $menu
 	);
 
-	set_input('hide_widget_controls', TRUE);
+	set_input('custom_widget_controls', TRUE);
 	$body = elgg_view_layout('role_widgets', $params);
 	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
 }
@@ -398,8 +401,9 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
  * Modify widget menu
  */
 function roles_widget_menu_setup($hook, $type, $return, $params) {
-	if (get_input('hide_widget_controls')) {
-		return array();
+	if (get_input('custom_widget_controls')) {
+		$return = array();
+		return $return;
 	}
 
 	return $return;
