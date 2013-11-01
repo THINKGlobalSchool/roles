@@ -48,6 +48,7 @@ $english = array(
 	'roles:label:no' => 'No',
 	'roles:label:none' => 'None',
 	'roles:label:priority' => 'Priority',
+	'roles:label:default_tab' => 'Default Tab',
 	
 	// River
 	
