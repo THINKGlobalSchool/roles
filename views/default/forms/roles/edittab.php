@@ -14,6 +14,7 @@ $title = elgg_extract('title', $vars, '');
 $guid = elgg_extract('guid', $vars, NULL);
 $description = elgg_extract('description', $vars, '');
 $priority = elgg_extract('priority', $vars, '');
+$default_tab = elgg_extract('default_tab', $vars, 0);
 
 // Check if we've got an entity, if so, we're editing.
 if ($guid) {
@@ -42,6 +43,16 @@ $priority_input = elgg_view('input/text', array(
 	'value' => $priority
 ));
 
+$default_tab_label = elgg_echo('roles:label:default_tab');
+$default_tab_input = elgg_view('input/dropdown', array(
+	'name' => 'default_tab', 
+	'value' => $default_tab,
+	'options_values' => array(
+		1 => elgg_echo('roles:label:yes'),
+		0 => elgg_echo('roles:label:no'),
+	)
+));
+
 $submit_input = elgg_view('input/submit', array(
 	'name' => 'submit', 
 	'value' => elgg_echo('save')
@@ -61,7 +72,11 @@ $form_body = <<<HTML
 	</div><br />
 	<div>
 		<label>$priority_label</label><br />
-        $priority_input
+		$priority_input
+	</div><br />
+	<div>
+		<label>$default_tab_label</label><br />
+		$default_tab_input
 	</div><br />
 	<div class='elgg-foot'>
 		$submit_input

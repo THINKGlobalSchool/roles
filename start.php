@@ -164,49 +164,12 @@ function roles_home_page_handler($page) {
 	gatekeeper();
 
 	elgg_load_js('elgg.roles');
-
-	if ($role_guid = get_input('role')) {
-		$role = get_entity($role_guid);
-		if (!elgg_instanceof($role, 'object', 'role') || !$role->dashboard) {
-			register_error(elgg_echo('roles:error:invaliddashboard'));
-			forward();
-		}
-	} else {
-		$user_roles = get_dashboard_roles(elgg_get_logged_in_user_guid());
-		// Check for roles
-		if (count($user_roles) == 0) {
-			$dashboard_roles = get_dashboard_roles();
-			if (count($dashboard_roles) >= 1) {
-				// Grab the first available role
-				$role_guid = $dashboard_roles[0]->guid;
-			}
-		} else {
-			// Load first role for single/multiple
-			$role_guid = $user_roles[0]->guid;
-		}
-
-		$role = get_entity($role_guid);
-	}
-
 	elgg_load_css('elgg.roles');
 
-	// @TODO function?
-	$tabs = elgg_get_entities_from_relationship(array(
-		'type' => 'object',
-		'subtype' => 'role_dashboard_tab',
-		'relationship' => ROLE_DASHBOARD_TAB_RELATIONSHIP,
-		'relationship_guid' => $role_guid,
-		'inverse_relationship' => TRUE,
-		'limit' => 0,
-		'order_by_metadata' => array(
-			'name' => 'priority',
-			'as' => 'integer',
-			'direction' => 'ASC'
-		) 
-	));
+	$tabs = get_user_dashboard_tabs();
 
-	// Still no roles or tabs? Show an error and get out of here
-	if (!$role_guid || !$tabs) {
+	// No tabs? Show an error and get out of here
+	if (!$tabs) {
 		register_error(elgg_echo('roles:error:invaliddashboard'));
 		forward('activity');
 	}
@@ -219,7 +182,6 @@ function roles_home_page_handler($page) {
 
 	if (count($tabs) > 1) {
 		$menu = elgg_view_menu('role-tab-menu', array(
-			'entity' => $role,
 			'tabs' => $tabs,
 			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
 			'sort_by' => 'priority'

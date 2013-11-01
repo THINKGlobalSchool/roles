@@ -112,6 +112,7 @@ function roles_dashboard_tab_prepare_form_vars($tab = null) {
 		'description' => '',
 		'priority' => '',
 		'guid' => NULL,
+		'default_tab' => 0,
 	);
 
 	if ($tab) {
@@ -361,7 +362,7 @@ function get_user_roles_without($user, $limit = 10, $offset = 0, $site_guid = EL
  * @param  int        $user_guid  The user guid (if not supplied, returns all roles)
  * @return array
  */
-function get_dashboard_roles($user_guid = 0) {
+function get_user_dashboard_roles($user_guid = 0) {
 	$options = array(
 		'type' => 'object',
 		'subtype' => 'role',
@@ -380,4 +381,61 @@ function get_dashboard_roles($user_guid = 0) {
 	}
 
 	return $roles;
+}
+
+/**
+ * Helper function to grab all user dashboard role tabs
+ * (for all roles a user is a member of)
+ *
+ * @param  int    $user_guid The user guid (defaults to current user)
+ * @return array
+ */
+function get_user_dashboard_tabs($user_guid = 0) {
+	if (!$user_guid) {
+		$user_guid = elgg_get_logged_in_user_guid();
+	}
+
+	$dbprefix = elgg_get_config('dbprefix');
+	$user_guid = elgg_get_logged_in_user_guid();
+	$rr = ROLE_RELATIONSHIP;
+	$tr = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+
+	// Get all tabs, sorted by priority
+	$tabs = elgg_get_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => 'role_dashboard_tab',
+		'limit' => 0,
+		'order_by_metadata' => array(
+			'name' => 'priority',
+			'as' => 'integer',
+			'direction' => 'ASC'
+		),
+		'joins' => array(
+			"JOIN {$dbprefix}entity_relationships tr"
+		),
+		'wheres' => array(
+			"tr.guid_two IN (
+				SELECT err.guid from {$dbprefix}entities err
+				JOIN {$dbprefix}entity_relationships rr ON err.guid = rr.guid_two
+				WHERE rr.guid_one = {$user_guid} AND rr.relationship = '{$rr}'
+			) AND tr.guid_one = e.guid AND tr.relationship = '{$tr}'"
+		)
+	));
+
+	// No tabs? Let's see if we have a default
+	if (!$tabs) {
+		// Remove all other default tabs (only one)
+		$default_tabs = elgg_get_entities_from_metadata(array(
+			'type' => 'object',
+			'subtype' => 'role_dashboard_tab',
+			'limit' => 1, // There is only ever one default
+			'metadata_name' => 'default_tab',
+			'metadata_value' => 1,
+		));
+
+		// Will still return null if there's no tabs, that's ok that should be handled elsewhere
+		return $default_tabs;
+	}
+
+	return $tabs;
 }
