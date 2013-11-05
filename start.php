@@ -188,10 +188,12 @@ function roles_home_page_handler($page) {
 		$top_class = "border-top";
 	}
 
+	$content = elgg_view('roles/dashboard/content') . $menu;
+
 	$params = array(
 		'tab_guid' => $tab_guid,
 		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
-		'content' => $menu
+		'content' => $content
 	);
 
 	set_input('custom_widget_controls', TRUE);

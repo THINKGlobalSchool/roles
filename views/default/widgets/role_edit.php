@@ -11,7 +11,7 @@
  */
 
 // Only add global edit content to role widgets
-if (isset($vars['en1tity']) && $vars['entity']->context == 'rolewidget') {
+if (isset($vars['entity']) && $vars['entity']->context == 'rolewidget') {
 
 	$params = array(
 		'name' => 'params[hide_empty]',
