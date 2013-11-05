@@ -29,6 +29,7 @@ $widget_types = elgg_get_widget_types('rolewidget');
 
 $context = "rolewidget";
 $show_access = false;
+
 elgg_push_context('widgets');
 
 $widgets = elgg_get_widgets($tab->guid, $context);

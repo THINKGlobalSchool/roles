@@ -439,3 +439,22 @@ function get_user_dashboard_tabs($user_guid = 0) {
 
 	return $tabs;
 }
+
+/**
+ * Extends a view with another view.
+ *
+ * @param string $view           The widget view to extend (content | edit)
+ * @param string $view_extension The view to extend
+ * @param int    $priority       Priority for the extension
+ */
+function roles_extend_widget_views($view, $view_extension, $priority = 501) {
+	global $CONFIG;
+
+	foreach ($CONFIG->views->locations['default'] as $name => $location) {
+		if (strpos($name, 'widgets/') === 0 && $name != "widgets/role_edit"
+		) {
+			$view_name = substr($name, 0, strrpos($name, '/') + 1);
+			elgg_extend_view($view_name . $view, $view_extension);
+		}
+	}
+}

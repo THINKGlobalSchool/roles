@@ -49,6 +49,7 @@ $english = array(
 	'roles:label:none' => 'None',
 	'roles:label:priority' => 'Priority',
 	'roles:label:default_tab' => 'Default Tab',
+	'roles:label:hide_empty' => 'Hide empty widget',
 	
 	// River
 	
