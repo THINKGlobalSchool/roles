@@ -173,7 +173,7 @@ function roles_home_page_handler($page) {
 		forward('activity');
 	}
 
-	$tab_guid = get_input('idx', FALSE);
+	$tab_guid = get_input('tab', FALSE);
 
 	if (!$tab_guid) {
 		$tab_guid = $tabs[0]->guid;
