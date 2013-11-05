@@ -14,6 +14,7 @@
  *
  * OVERRIDES:
  * - admin/appearance/default_widgets
+ * - object/widget
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
@@ -114,10 +115,8 @@ function roles_init() {
 	elgg_register_ajax_view('roles/modules/dashboard_roles');
 	elgg_register_ajax_view('roles/modules/dashboard_tabs');
 
-	// Widgets can only have one handler, so this will be unique
-	// elgg_register_widget_type('test_1', 'test widget 1', 'test desc', 'rolewidget');
-	// elgg_register_widget_type('test_2', 'test widget 2', 'test desc', 'rolewidget');
-	// elgg_register_widget_type('test_3', 'test widget 3', 'test desc', 'rolewidget');
+	// Extend all role widget edit views
+	roles_extend_widget_views('edit', 'widgets/role_edit');
 
 	// Register one once for subtype
 	run_function_once("roles_run_once");

@@ -241,7 +241,8 @@ elgg.roles.add_widget = function(event) {
 			handler: type,
 			owner_guid: tab_guid,
 			context: $("input[name='widget_context']").val(),
-			default_widgets: $("input[name='default_widgets']").val() || 0
+			default_widgets: $("input[name='default_widgets']").val() || 0,
+			show_access: '0'
 		},
 		success: function(json) {
 			$('#elgg-widget-col-1').prepend(json.output);
