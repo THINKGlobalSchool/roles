@@ -388,9 +388,10 @@ function get_user_dashboard_roles($user_guid = 0) {
  * (for all roles a user is a member of)
  *
  * @param  int    $user_guid The user guid (defaults to current user)
+ * @param  int    $role_guid Specific role to grab tabs for
  * @return array
  */
-function get_user_dashboard_tabs($user_guid = 0) {
+function get_user_dashboard_tabs($user_guid = 0, $role_guid = 0) {
 	if (!$user_guid) {
 		$user_guid = elgg_get_logged_in_user_guid();
 	}
@@ -401,7 +402,7 @@ function get_user_dashboard_tabs($user_guid = 0) {
 	$tr = ROLE_DASHBOARD_TAB_RELATIONSHIP;
 
 	// Get all tabs, sorted by priority
-	$tabs = elgg_get_entities_from_metadata(array(
+	$tab_options = array(
 		'type' => 'object',
 		'subtype' => 'role_dashboard_tab',
 		'limit' => 0,
@@ -412,15 +413,24 @@ function get_user_dashboard_tabs($user_guid = 0) {
 		),
 		'joins' => array(
 			"JOIN {$dbprefix}entity_relationships tr"
-		),
-		'wheres' => array(
-			"tr.guid_two IN (
-				SELECT err.guid from {$dbprefix}entities err
-				JOIN {$dbprefix}entity_relationships rr ON err.guid = rr.guid_two
-				WHERE rr.guid_one = {$user_guid} AND rr.relationship = '{$rr}'
-			) AND tr.guid_one = e.guid AND tr.relationship = '{$tr}'"
 		)
-	));
+	);
+
+	if ($role_guid) {
+		$tab_roles_in = $role_guid;
+	} else {
+		$tab_roles_in = "SELECT err.guid from {$dbprefix}entities err
+				JOIN {$dbprefix}entity_relationships rr ON err.guid = rr.guid_two
+				WHERE rr.guid_one = {$user_guid} AND rr.relationship = '{$rr}'";
+	}
+
+	$tab_options['wheres'] = array(
+			"tr.guid_two IN (
+				{$tab_roles_in}
+			) AND tr.guid_one = e.guid AND tr.relationship = '{$tr}'"
+	);
+
+	$tabs = elgg_get_entities_from_metadata($tab_options);
 
 	// No tabs? Let's see if we have a default
 	if (!$tabs) {

@@ -165,7 +165,7 @@ function roles_home_page_handler($page) {
 	elgg_load_js('elgg.roles');
 	elgg_load_css('elgg.roles');
 
-	$tabs = get_user_dashboard_tabs();
+	$tabs = get_user_dashboard_tabs(0, get_input('role', 0));
 
 	// No tabs? Show an error and get out of here
 	if (!$tabs) {
@@ -376,14 +376,17 @@ function roles_widget_menu_setup($hook, $type, $return, $params) {
 function roles_tab_menu_setup($hook, $type, $return, $params) {
 	$tabs = $params['tabs'];
 
-	$current_tab = get_input('idx', $tabs[0]->guid);
+	$current_tab = get_input('tab', $tabs[0]->guid);
+
+	if ($role_guid = get_input('role')) {
+		$role_param = "&role={$role_guid}";
+	}
 
 	foreach ($tabs as $tab) {
-
 		$options = array(
 			'name' => 'role-tab-' . $tab->guid,
 			'text' => $tab->title,
-			'href' => '?idx=' . $tab->guid,
+			'href' => '?tab=' . $tab->guid . $role_param,
 			'selected' => ($current_tab == $tab->guid),
 			'priority' => $tab->priority
 		);
