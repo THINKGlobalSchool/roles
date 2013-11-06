@@ -47,7 +47,7 @@ if (elgg_in_context('default_widgets')) {
 	}
 }
 
-if ($widget->context == 'rolewidget') {
+if ($widget->context == 'rolewidget' && !elgg_in_context('admin_widgets')) {
 	if (!$content) {
 		echo '<div class="hidden"></div>';
 		return;

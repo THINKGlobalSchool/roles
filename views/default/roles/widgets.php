@@ -26,6 +26,7 @@ $params = array(
 	'show_add_panel' => TRUE,
 );
 
+elgg_push_context('admin_widgets');
 $content = elgg_view_layout('role_widgets', $params);
 
 $available_label = elgg_echo('roles:label:availablewidgets');
