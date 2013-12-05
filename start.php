@@ -78,11 +78,18 @@ function roles_init() {
 	// Set up role tab menu
 	elgg_register_plugin_hook_handler('register', 'menu:role-tab-menu', 'roles_tab_menu_setup');
 
+
 	// Provide roles options when filtering photo lists
 	elgg_register_plugin_hook_handler('listing_filter_options', 'tidypics', 'roles_photo_list_filter_handler');
 	
 	// Register handler for default roles widgets
 	elgg_register_plugin_hook_handler('get_list', 'default_widgets', 'roles_default_widgets_hook');
+
+	// Add roles item to activity menu
+	if (elgg_is_active_plugin('tgstheme')) {
+		elgg_register_plugin_hook_handler('register', 'menu:activity_filter', 'roles_activity_menu_setup');
+		elgg_register_plugin_hook_handler('get_options', 'activity_list', 'roles_activity_options_handler');
+	}
 
 	// Register a handler for creating roles
 	elgg_register_event_handler('create', 'object', 'roles_create_event_listener');
@@ -396,6 +403,55 @@ function roles_tab_menu_setup($hook, $type, $return, $params) {
 	}
 
 
+
+	return $return;
+}
+
+/**
+ * Add roles picker to activity filter menu
+ */
+function roles_activity_menu_setup($hook, $type, $return, $params) {
+	$role_guid = get_input('role_guid', null);
+
+	// Role dropdown input
+	$role_input = elgg_view('input/roledropdown', array(
+		'show_all' => true,
+		'id' => 'activity-role-filter',
+		'value' => $role_guid,
+		'class' => 'filtrate-filter',
+		'data-param' => 'role',
+		'data-placeholder' => elgg_echo('roles:label:selectrole')
+	));
+
+	$options = array(
+		'name' => 'role-filter',
+		'label' => elgg_echo('roles:role'),
+		'text' => $role_input,
+		'href' => false,
+		'section' => 'main',
+		'priority' => 499,
+	);
+
+	$return[] = ElggMenuItem::factory($options);
+
+	return $return;
+}
+
+/**
+ * Add roles logic to activity list
+ */
+function roles_activity_options_handler($hook, $type, $return, $params) {
+	$role_guid = get_input('role', false);
+
+	$role = get_entity($role_guid);
+
+	// Check for valid role
+	if (elgg_instanceof($role, 'object', 'role')) {
+		// Add relationship options
+		$return['relationship'] = ROLE_RELATIONSHIP;
+		$return['relationship_guid'] = $role_guid;
+		$return['inverse_relationship'] = TRUE;
+	}
 
 	return $return;
 }

@@ -50,6 +50,7 @@ $english = array(
 	'roles:label:priority' => 'Priority',
 	'roles:label:default_tab' => 'Default Tab',
 	'roles:label:hide_empty' => 'Hide empty widget',
+	'roles:label:selectrole' => 'Select a role',
 	
 	// River
 	
