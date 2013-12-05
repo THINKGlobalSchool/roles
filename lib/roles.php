@@ -464,7 +464,8 @@ function roles_extend_widget_views($view, $view_extension, $priority = 501) {
 		if (strpos($name, 'widgets/') === 0 && $name != "widgets/role_edit"
 		) {
 			$view_name = substr($name, 0, strrpos($name, '/') + 1);
-			if (!in_array($view_extension, $CONFIG->views->extensions[$view_name . $view])) {
+			$ext_array = $CONFIG->views->extensions[$view_name . $view];
+			if (!$ext_array || !in_array($view_extension, $ext_array)) {
 				elgg_extend_view($view_name . $view, $view_extension);
 			}
 		}
