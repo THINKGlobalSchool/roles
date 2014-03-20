@@ -414,7 +414,7 @@ function roles_activity_menu_setup($hook, $type, $return, $params) {
 	$role_guid = get_input('role_guid', null);
 
 	// Role dropdown input
-	$role_input = elgg_view('input/roledropdown', array(
+	$role_input = elgg_view('input/chosenroledropdown', array(
 		'show_all' => true,
 		'id' => 'activity-role-filter',
 		'value' => $role_guid,
