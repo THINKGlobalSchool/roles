@@ -71,4 +71,4 @@ foreach ($default_tabs as $d_tab) {
 elgg_clear_sticky_form('dashboard-tab-edit-form');
 
 system_message(elgg_echo('roles:success:savetab'));
-forward(elgg_get_site_url() . 'admin/roles/edittab?guid=' . $tab->guid);
+forward(elgg_normalize_url('admin/roles/tabs'));

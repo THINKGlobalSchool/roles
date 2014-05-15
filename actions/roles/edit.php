@@ -30,12 +30,14 @@ if (!$title || !$description) {
 if (!$role_guid) {
 	$role = new ElggRole();
 	$role->access_id = ACCESS_LOGGED_IN; // @TODO .. what should this be
+	$fwd = elgg_normalize_url('admin/roles/manage');	
 } else { // Editing
 	$role = get_entity($role_guid);
 	if (!elgg_instanceof($role, 'object', 'role')) {
 		register_error(elgg_echo('roles:error:edit'));
 		forward(REFERER);
 	}
+	$fwd = elgg_normalize_url('admin/roles/editrole?guid=' . $role->guid);
 }
 
 $role->title = $title;
@@ -54,4 +56,4 @@ if (!$role->save()) {
 elgg_clear_sticky_form('role-edit-form');
 
 system_message(elgg_echo('roles:success:save'));
-forward(elgg_get_site_url() . 'admin/roles/editrole?guid=' . $role->guid);
+forward($fwd);

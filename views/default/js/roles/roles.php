@@ -225,8 +225,7 @@ elgg.roles.add_widget = function(event) {
 	var tab_guid = event.data.tab_guid;
 
 	// elgg-widget-type-<type>
-	var type = $(this).attr('id');
-	type = type.substr(type.indexOf('elgg-widget-type-') + "elgg-widget-type-".length);
+	var type = $(this).data('elgg-widget-type');
 
 	// if multiple instances not allow, disable this widget type add button
 	var multiple = $(this).attr('class').indexOf('elgg-widget-multiple') != -1;

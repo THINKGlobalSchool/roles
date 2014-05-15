@@ -51,7 +51,7 @@ if (elgg_can_edit_widget_layout($context)) {
 
 echo $vars['content'];
 
-echo "<div class='elgg-layout clearfix {$class}'>";
+echo "<div class='elgg-layout-widgets clearfix {$class}'>";
 
 $widget_class = "elgg-col-1of{$num_columns}";
 for ($column_index = 1; $column_index <= $num_columns; $column_index++) {
