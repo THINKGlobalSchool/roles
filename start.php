@@ -34,22 +34,18 @@ function roles_init() {
 		
 	// Register CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/css');
-	elgg_register_simplecache_view('css/roles/css');	
 	elgg_register_css('elgg.roles', $r_css);
 		
 	// Register Admin CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/admin');
-	elgg_register_simplecache_view('css/roles/admin');	
 	elgg_register_css('elgg.roles.admin', $r_css);
 
 	// Register JS library
 	$r_js = elgg_get_simplecache_url('js', 'roles/roles');
-	elgg_register_simplecache_view('js/roles/roles');	
 	elgg_register_js('elgg.roles', $r_js);
 
 	// Register Global Hooks JS library
 	$r_js = elgg_get_simplecache_url('js', 'roles/hooks');
-	elgg_register_simplecache_view('js/roles/hooks');	
 	elgg_register_js('elgg.roles_hooks', $r_js);
 	elgg_load_js('elgg.roles_hooks');
 		
