@@ -11,6 +11,7 @@
  */
 
 $guid = elgg_extract('guid', $vars, NULL);
+$subtype = elgg_extract('type', $vars);
 
 $role = get_entity($guid);
 
@@ -23,7 +24,7 @@ set_input('role_guid', $guid);
 
 $content = elgg_list_entities(array(
 	'type' => 'object',
-	'subtype' => 'role_dashboard_tab',
+	'subtype' => $subtype,
 	'limit' => 0,
 	'full_view' => FALSE
 ));

@@ -65,6 +65,31 @@ function roles_dashboard_tab_get_edit_content($type, $guid = NULL) {
 }
 
 /**
+ * Role profile tab edit form
+ */
+function roles_dashboard_profile_get_edit_content($type, $guid = NULL) {
+	elgg_push_breadcrumb(elgg_echo('admin:roles:profiletabs'), elgg_get_site_url() . 'admin/roles/profiletabs');
+	if ($type == 'edit') {
+		$profile = get_entity($guid);
+		elgg_push_breadcrumb($profile->title, $profile->getURL());
+		elgg_push_breadcrumb(elgg_echo('edit'));
+		if (!elgg_instanceof($profile, 'object', 'role_profile_tab')) {
+			forward(REFERER);
+		}
+	} else {
+		elgg_push_breadcrumb(elgg_echo('Add'));
+		$profile = null;
+	}
+	
+	$form_vars = roles_dashboard_profile_prepare_form_vars($profile);
+	
+	$content = elgg_view('navigation/breadcrumbs');
+	
+	$content .= elgg_view_form('roles/editprofiletab', array('name' => 'dashboard-tab-edit-form', 'id' => 'dashboard-tab-edit-form'), $form_vars);
+	
+	echo $content;
+}
+/**
  * Prepare the add/edit form variables
  *
  * @param ElggRole $role
@@ -78,7 +103,8 @@ function roles_prepare_form_vars($role= null) {
 		'description' => '',
 		'guid' => NULL,
 		'hidden' => '',
-		'dashboard' => NULL
+		'dashboard' => NULL,
+		'profile' => NULL
 	);
 
 	if ($role) {
@@ -128,6 +154,40 @@ function roles_dashboard_tab_prepare_form_vars($tab = null) {
 	}
 
 	elgg_clear_sticky_form('dashboard-tab-edit-form');
+
+	return $values;
+}
+
+/**
+ * Prepare the add/edit form variables for role profiles
+ *
+ * @param ElggObject $profile
+ * @return array
+ */
+function roles_dashboard_profile_prepare_form_vars($profile = null) {
+
+	// input names => defaults
+	$values = array(
+		'title' => '',
+		'description' => '',
+		'priority' => '',
+		'guid' => NULL,
+		'default_profile' => 0,
+	);
+
+	if ($profile) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = $profile->$field;
+		}
+	}
+
+	if (elgg_is_sticky_form('profile-tab-edit-form')) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = elgg_get_sticky_value('profile-tab-edit-form', $field);
+		}
+	}
+
+	elgg_clear_sticky_form('profile-tab-edit-form');
 
 	return $values;
 }

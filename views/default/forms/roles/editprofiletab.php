@@ -1,6 +1,6 @@
 <?php
 /**
- * TGS Roles Edit Form
+ * TGS Roles Edit Role Profile Form
  * 
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -13,14 +13,13 @@
 $title = elgg_extract('title', $vars, '');
 $guid = elgg_extract('guid', $vars, NULL);
 $description = elgg_extract('description', $vars, '');
-$hidden = elgg_extract('hidden', $vars, 0);
-$dashboard = elgg_extract('dashboard', $vars, 0);
-$profile = elgg_extract('profile', $vars, 0);
+$priority = elgg_extract('priority', $vars, '');
+$default_profile = elgg_extract('default_profile', $vars, 0);
 
 // Check if we've got an entity, if so, we're editing.
 if ($guid) {
 	$entity_hidden  = elgg_view('input/hidden', array(
-		'name' => 'role_guid', 
+		'name' => 'tab_guid', 
 		'value' => $guid,
 	));
 } 
@@ -38,30 +37,16 @@ $description_input = elgg_view("input/longtext", array(
 	'value' => $description
 ));
 
-$hidden_label = elgg_echo('roles:label:hidden');
-$hidden_input = elgg_view('input/dropdown', array(
-	'name' => 'hidden', 
-	'value' => $hidden,
-	'options_values' => array(
-		1 => elgg_echo('roles:label:yes'),
-		0 => elgg_echo('roles:label:no'),
-	)
+$priority_label = elgg_echo('roles:label:priority');
+$priority_input = elgg_view('input/text', array(
+	'name' => 'priority',
+	'value' => $priority
 ));
 
-$dashboard_label = elgg_echo('roles:label:dashboard');
-$dashboard_input = elgg_view('input/dropdown', array(
-	'name' => 'dashboard', 
-	'value' => $dashboard,
-	'options_values' => array(
-		1 => elgg_echo('roles:label:yes'),
-		0 => elgg_echo('roles:label:no'),
-	)
-));
-
-$profile_label = elgg_echo('roles:label:profile');
-$profile_input = elgg_view('input/dropdown', array(
-	'name' => 'profile', 
-	'value' => $profile,
+$default_profile_label = elgg_echo('roles:label:default_profile');
+$default_profile_input = elgg_view('input/dropdown', array(
+	'name' => 'default_tab', 
+	'value' => $default_tab,
 	'options_values' => array(
 		1 => elgg_echo('roles:label:yes'),
 		0 => elgg_echo('roles:label:no'),
@@ -73,34 +58,26 @@ $submit_input = elgg_view('input/submit', array(
 	'value' => elgg_echo('save')
 ));	
 
-// Add a view to extend the role form
-$role_form_extend = elgg_view('forms/roles/edit/extend', $vars);
-
 // Build Form Body
 $form_body = <<<HTML
 
 <div class='margin_top'>
 	<div>
 		<label>$title_label</label><br />
-        $title_input
+		$title_input
 	</div><br />
 	<div>
 		<label>$description_label</label><br />
         $description_input
 	</div><br />
 	<div>
-		<label>$hidden_label</label>
-		$hidden_input
+		<label>$priority_label</label><br />
+		$priority_input
 	</div><br />
 	<div>
-		<label>$dashboard_label</label>
-		$dashboard_input
+		<label>$default_profile_label</label><br />
+		$default_profile_input
 	</div><br />
-	<div>
-		<label>$profile_label</label>
-		$profile_input
-	</div><br />
-	$role_form_extend
 	<div class='elgg-foot'>
 		$submit_input
 		$entity_hidden

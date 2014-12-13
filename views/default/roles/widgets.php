@@ -12,17 +12,21 @@
 
 $guid = elgg_extract('guid', $vars, NULL);
 
-$tab = get_entity($guid);
+$entity = get_entity($guid);
 
-if (!$tab) {
+if (!$entity) {
 	return;
 }
 
-$widgets = elgg_get_widgets($guid, 'rolewidget');
+if ($entity->getSubtype() == 'role_dashboard_tab') {
+	$widget_type = 'rolewidget';
+} else if ($entity->getSubtype() == 'role_profile_tab') {
+	$widget_type = 'roleprofilewidget';
+}
 
 $params = array(
-	'widgets' => $widgets,
-	'tab_guid' => $guid,
+	'widget_type' => $widget_type,
+	'guid' => $guid,
 	'show_add_panel' => TRUE,
 );
 

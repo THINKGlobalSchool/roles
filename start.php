@@ -59,7 +59,9 @@ function roles_init() {
 	// Page handlers
 	elgg_register_page_handler('roles','roles_page_handler');
 	elgg_register_page_handler('home', 'roles_home_page_handler');
+	elgg_register_page_handler('profile', 'roles_profile_page_handler');
 					
+
 	// Register URL handler
 	elgg_register_entity_url_handler('object', 'role', 'role_url');		
 	
@@ -114,13 +116,17 @@ function roles_init() {
 	elgg_register_action('roles/removeuser', "$action_base/removeuser.php", 'admin');
 	elgg_register_action('roles/adduser', "$action_base/adduser.php", 'admin');
 	elgg_register_action('roles/edittab', "$action_base/edittab.php", 'admin');
+	elgg_register_action('roles/editprofiletab', "$action_base/editprofiletab.php", 'admin');
 	elgg_register_action('roles/deletetab', "$action_base/deletetab.php", 'admin');
+	elgg_register_action('roles/deleteprofiletab', "$action_base/deleteprofiletab.php", 'admin');
 	elgg_register_action('roles/assigntab', "$action_base/assigntab.php", 'admin');
 	elgg_register_action('roles/unassigntab', "$action_base/unassigntab.php", 'admin');
 
 	// Whitelist ajax views
 	elgg_register_ajax_view('roles/modules/dashboard_roles');
 	elgg_register_ajax_view('roles/modules/dashboard_tabs');
+	elgg_register_ajax_view('roles/modules/profile_roles');
+	elgg_register_ajax_view('roles/modules/profile_tabs');
 
 	// Extend all role widget edit views
 	roles_extend_widget_views('edit', 'widgets/role_edit');
@@ -149,7 +155,7 @@ function roles_page_handler($page) {
 				break;
 			case 'loadtabs':
 				$guid = sanitise_string(get_input('guid'));
-				echo elgg_view('roles/tabs', array('guid' => $guid));
+				echo elgg_view('roles/tabs', array('guid' => $guid, 'type' => get_input('type')));
 				break;
 			default: 
 				return FALSE;
@@ -209,6 +215,97 @@ function roles_home_page_handler($page) {
 }
 
 /**
+ * Profile Page Handler
+ *
+ * @param array $page From the page_handler function
+ * @return true|false Depending on success
+ *
+ */
+function roles_profile_page_handler($page) {
+	elgg_load_js('elgg.roles');
+	elgg_load_css('elgg.roles');
+
+
+	global $CONFIG;
+
+	if (isset($page[0])) {
+		$username = $page[0];
+		$user = get_user_by_username($username);
+		elgg_set_page_owner_guid($user->guid);
+	}
+
+	// short circuit if invalid or banned username
+	if (!$user || ($user->isBanned() && !elgg_is_admin_logged_in())) {
+		register_error(elgg_echo('profile:notfound'));
+		forward();
+	}
+
+	$action = NULL;
+	if (isset($page[1])) {
+		$action = $page[1];
+	}
+
+	switch ($action) {
+		case 'edit':
+			// use for the core profile edit page
+			require $CONFIG->path . 'pages/profile/edit.php';
+			return;
+			break;
+		default:
+			if (isset($page[1])) {
+				$section = $page[1];
+			} else {
+				$section = 'activity';
+			}
+			$content = tabbed_profile_layout_page($user, $section);
+			$body = elgg_view_layout('one_column', array(
+				'content' => $content,
+				'class' => 'tabbed-profile',
+			));
+			break;
+	}
+
+	echo elgg_view_page($title, $body);
+
+
+
+	$tabs = get_user_dashboard_tabs(0, get_input('role', 0));
+
+	// No tabs? Show an error and get out of here
+	if (!$tabs) {
+		register_error(elgg_echo('roles:error:invaliddashboard'));
+		forward('activity');
+	}
+
+	$tab_guid = get_input('tab', FALSE);
+
+	if (!$tab_guid) {
+		$tab_guid = $tabs[0]->guid;
+	}
+
+	if (count($tabs) > 1) {
+		$menu = elgg_view_menu('role-tab-menu', array(
+			'tabs' => $tabs,
+			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
+			'sort_by' => 'priority'
+		));
+		$top_class = "border-top";
+	}
+
+	$content = elgg_view('roles/dashboard/content') . $menu;
+
+	$params = array(
+		'tab_guid' => $tab_guid,
+		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
+		'content' => $content
+	);
+
+	set_input('custom_widget_controls', TRUE);
+	$body = elgg_view_layout('role_widgets', $params);
+	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
+}
+
+/**
  * Populates the ->getUrl() method for role entities
  *
  * @param ElggRole entity
@@ -226,6 +323,8 @@ function roles_submenus() {
 		elgg_register_admin_menu_item('administer', 'manage', 'roles');
 		elgg_register_admin_menu_item('administer', 'dashboard', 'roles');
 		elgg_register_admin_menu_item('administer', 'tabs', 'roles');
+		elgg_register_admin_menu_item('administer', 'profile', 'roles');
+		elgg_register_admin_menu_item('administer', 'profiletabs', 'roles');
 	}
 }
 
@@ -236,15 +335,15 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 
 	$entity = $params['entity'];
 	
-	if (elgg_instanceof($entity, 'object', 'role') || elgg_instanceof($entity, 'object', 'role_dashboard_tab')) {
+	if (elgg_instanceof($entity, 'object', 'role') 
+		|| elgg_instanceof($entity, 'object', 'role_dashboard_tab')
+		|| elgg_instanceof($entity, 'object', 'role_profile_tab')) {
 		$return = array();
 
 		if ($entity->getSubtype() == 'role') {
 			$edit_handler = 'editrole';
 			$delete_handler = 'delete';
-		}
-
-		if ($entity->getSubtype() == 'role_dashboard_tab') {
+		} else if ($entity->getSubtype() == 'role_dashboard_tab') {
 			// Check for assignement context
 			if (elgg_in_context('role_tab_assignment')) {
 				$role_guid = get_input('role_guid');
@@ -278,6 +377,9 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 			}
 			$edit_handler = 'edittab';
 			$delete_handler = 'deletetab';
+		} else if ($entity->getSubtype() == 'role_profile_tab') {
+			$edit_handler = 'editprofiletab';
+			$delete_handler = 'deleteprofiletab';
 		}
 
 		$edit_href = elgg_get_site_url() . "admin/roles/{$edit_handler}?guid={$entity->guid}";

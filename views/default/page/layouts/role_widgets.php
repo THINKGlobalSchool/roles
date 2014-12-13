@@ -4,6 +4,7 @@
  *
  * Modified version of the page/layouts/widgets layout
  *
+ * @uses $vars['widget_type']      Type of widget to use
  * @uses $vars['content']          Optional display box at the top of layout
  * @uses $vars['num_columns']      Number of widget columns for this layout (3)
  * @uses $vars['show_add_widgets'] Display the add widgets button and panel (false)
@@ -15,24 +16,25 @@ $num_columns = elgg_extract('num_columns', $vars, 2);
 $class = elgg_extract('class', $vars, '');
 $show_add_widgets = elgg_extract('show_add_widgets', $vars, false);
 $show_add_panel = elgg_extract('show_add_panel', $vars, false);
+$widget_type = elgg_extract('widget_type', $vars);
 // $show_access = elgg_extract('show_access', $vars, true);
 
-$tab_guid = elgg_extract('tab_guid', $vars, false);
-$tab = get_entity($tab_guid);
+$entity_guid = elgg_extract('guid', $vars, false);
+$entity = get_entity($entity_guid);
 
-if (!elgg_instanceof($tab, 'object', 'role_dashboard_tab')) {
-	echo elgg_echo('roles:error:tabnotfound');
+if (!elgg_instanceof($entity, 'object', 'role_dashboard_tab') && !elgg_instanceof($entity, 'object', 'role_profile_tab')) {
+	echo elgg_echo('roles:error:widgetsnotfound');
 	return;
 }
 
-$widget_types = elgg_get_widget_types('rolewidget');
+$widget_types = elgg_get_widget_types($widget_type);
 
-$context = "rolewidget";
+$context = $widget_type;
 $show_access = false;
 
 elgg_push_context('widgets');
 
-$widgets = elgg_get_widgets($tab->guid, $context);
+$widgets = elgg_get_widgets($entity->guid, $context);
 
 if (elgg_can_edit_widget_layout($context)) {
 	if ($show_add_widgets) {

@@ -66,6 +66,7 @@ elgg.roles.populated_module = function(event, type, params, value) {
 elgg.roles.generic_populated_module = function(event, type, params, value) {
 	var $tabs_module = $('#tab-list');
 	var $role_module = $('#role-list');
+	var $profile_module = $('#profile-list');
 
 	if ($tabs_module.length > 0) {
 		$tabs_module.find('li.elgg-item').each(function() {
@@ -88,17 +89,44 @@ elgg.roles.generic_populated_module = function(event, type, params, value) {
 			});
 		});
 	} else if ($role_module.length > 0) {
+		if ($role_module.hasClass('role-profile')) {
+			var type = 'role_profile_tab';
+		} else if ($role_module.hasClass('role-dashboard')) {
+			var type = 'role_dashboard_tab';
+		}
+
 		$role_module.find('li.elgg-item').each(function() {
+			// Extract guid from list item
+			var id = $(this).attr('id');
+			var id = $(this).attr('id');
+			var guid = id.substring(id.lastIndexOf('-') + 1);
+			
+			$(this).bind('click', function(event) {
+				if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
+					elgg.roles.load_tabs(guid, type);
+
+					// Remove selected
+					$role_module.find('li.elgg-item').each(function() {
+						$(this).removeClass('role-state-selected');
+					});
+				
+					// Select this role
+					$(this).addClass('role-state-selected');
+				}
+			});
+		});
+	} else if ($profile_module.length > 0) {
+		$profile_module.find('li.elgg-item').each(function() {
 			// Extract guid from list item
 			var id = $(this).attr('id');
 			var guid = id.substring(id.lastIndexOf('-') + 1);
 			
 			$(this).bind('click', function(event) {
 				if ($(event.target).parents(".elgg-menu-item-entity-actions").length == 0) {
-					elgg.roles.load_tabs(guid);
+					elgg.roles.load_widgets(guid);
 
 					// Remove selected
-					$role_module.find('li.elgg-item').each(function() {
+					$profile_module.find('li.elgg-item').each(function() {
 						$(this).removeClass('role-state-selected');
 					});
 				
@@ -162,13 +190,16 @@ elgg.roles.load_widgets = function(tab_guid) {
 }
 
 // Load tabs for role dashboards
-elgg.roles.load_tabs = function(role_guid) {
+elgg.roles.load_tabs = function(role_guid, type) {
 	// Spinner
 	$('#tab-list-output').addClass('elgg-ajax-loader');
 	$('#tab-list-output').html('');
 	// Load
 	elgg.get(elgg.roles.getTabsURL, {
-		data: {guid: role_guid}, 
+		data: {
+			guid: role_guid,
+			type: type
+		}, 
 		success: function(data) {
 			$('#tab-list-output').removeClass('elgg-ajax-loader');
 			$('#tab-list-output').html(data);
