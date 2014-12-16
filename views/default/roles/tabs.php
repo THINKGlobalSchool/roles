@@ -29,6 +29,10 @@ $content = elgg_list_entities(array(
 	'full_view' => FALSE
 ));
 
+if (!$content) {
+	$content = elgg_echo('roles:label:notabs');
+}
+
 $tabs_label = elgg_echo('admin:roles:tabs');
 $tabs_module = elgg_view_module('inline', $tabs_label, $content);	
 

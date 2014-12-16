@@ -31,6 +31,7 @@ function roles_init() {
 	// Define relationships
 	define('ROLE_RELATIONSHIP', 'member_of_role');
 	define('ROLE_DASHBOARD_TAB_RELATIONSHIP', 'dashboard_tab_assigned_to_role');
+	define('ROLE_PROFILE_TAB_RELATIONSHIP', 'profile_tab_assigned_to_role');
 		
 	// Register CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/css');
@@ -343,12 +344,22 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 		if ($entity->getSubtype() == 'role') {
 			$edit_handler = 'editrole';
 			$delete_handler = 'delete';
-		} else if ($entity->getSubtype() == 'role_dashboard_tab') {
+		} else if ($entity->getSubtype() == 'role_dashboard_tab' || $entity->getSubtype() == 'role_profile_tab') {
+			if ($entity->getSubtype() == 'role_dashboard_tab') {
+				$edit_handler = 'edittab';
+				$delete_handler = 'deletetab';
+				$relationship = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+			} else if ($entity->getSubtype() == 'role_profile_tab') {
+				$edit_handler = 'editprofiletab';
+				$delete_handler = 'deleteprofiletab';
+				$relationship = ROLE_PROFILE_TAB_RELATIONSHIP;
+			}
+
 			// Check for assignement context
 			if (elgg_in_context('role_tab_assignment')) {
 				$role_guid = get_input('role_guid');
 
-				if (check_entity_relationship($entity->guid, ROLE_DASHBOARD_TAB_RELATIONSHIP, $role_guid)) {
+				if (check_entity_relationship($entity->guid, $relationship, $role_guid)) {
 					$options = array(
 						'name' => 'remove',
 						'text' => elgg_echo('remove'),
@@ -356,7 +367,7 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/unassigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-unassign-dashboard-tab'
+						'class' => 'elgg-button elgg-button-action roles-unassign-tab'
 					);
 
 					$return[] = ElggMenuItem::factory($options);
@@ -368,18 +379,13 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/assigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-assign-dashboard-tab'
+						'class' => 'elgg-button elgg-button-action roles-assign-tab'
 					);
 
 					$return[] = ElggMenuItem::factory($options);
 				}
 				return $return;
 			}
-			$edit_handler = 'edittab';
-			$delete_handler = 'deletetab';
-		} else if ($entity->getSubtype() == 'role_profile_tab') {
-			$edit_handler = 'editprofiletab';
-			$delete_handler = 'deleteprofiletab';
 		}
 
 		$edit_href = elgg_get_site_url() . "admin/roles/{$edit_handler}?guid={$entity->guid}";

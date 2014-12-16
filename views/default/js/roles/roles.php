@@ -32,7 +32,7 @@ elgg.roles.init = function() {
 	$('a.elgg-widget-delete-button').live('click', elgg.ui.widgets.remove);
 
 	// Init roles assign button
-	$('.roles-assign-dashboard-tab, .roles-unassign-dashboard-tab').live('click', elgg.roles.assign_tab);
+	$('.roles-assign-tab, .roles-unassign-tab').live('click', elgg.roles.assign_tab);
 
 	// Disable widget dragging on the home page
 	$('.elgg-layout-one-sidebar-roles-home .elgg-widgets').sortable('disable');
@@ -219,10 +219,10 @@ elgg.roles.assign_tab = function(event) {
 				// Error.. do nothing
 			} else {
 				// Switch links/classes
-				if ($_this.hasClass('roles-assign-dashboard-tab')) {
+				if ($_this.hasClass('roles-assign-tab')) {
 					// Replace classes
-					$_this.removeClass('roles-assign-dashboard-tab');
-					$_this.addClass('roles-unassign-dashboard-tab');
+					$_this.removeClass('roles-assign-tab');
+					$_this.addClass('roles-unassign-tab');
 
 					// Replace text/title
 					$_this.html(elgg.echo('remove'));
@@ -230,10 +230,10 @@ elgg.roles.assign_tab = function(event) {
 
 					// Replace link
 				 	$_this.attr('href', $_this.attr('href').replace("roles/assigntab", "roles/unassigntab"));
-				} else if ($_this.hasClass('roles-unassign-dashboard-tab')) {
+				} else if ($_this.hasClass('roles-unassign-tab')) {
 					// Replace classes
-					$_this.removeClass('roles-unassign-dashboard-tab');
-					$_this.addClass('roles-assign-dashboard-tab');
+					$_this.removeClass('roles-unassign-tab');
+					$_this.addClass('roles-assign-tab');
 
 					// Replace text/title
 					$_this.html(elgg.echo('add'));

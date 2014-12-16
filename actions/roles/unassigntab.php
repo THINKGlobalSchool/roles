@@ -14,7 +14,16 @@
 $tab_guid = get_input('tab_guid');
 $role_guid = get_input('role_guid');
 
-$result = remove_entity_relationship($tab_guid, ROLE_DASHBOARD_TAB_RELATIONSHIP, $role_guid);
+$tab = get_entity($tab_guid);
+
+// Determine which relationship to create
+if ($tab->getSubtype() == 'role_profile_tab') {
+	$relationship = ROLE_PROFILE_TAB_RELATIONSHIP;
+} else if ($tab->getSubtype() == 'role_dashboard_tab') {
+	$relationship = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+}
+
+$result = remove_entity_relationship($tab_guid, $relationship, $role_guid);
 
 if ($result) {
 	system_message(elgg_echo('roles:success:tabunassigned'));
