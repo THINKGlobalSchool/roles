@@ -36,6 +36,12 @@ elgg.roles.init = function() {
 
 	// Disable widget dragging on the home page
 	$('.elgg-layout-one-sidebar-roles-home .elgg-widgets').sortable('disable');
+
+	// Click handler for description show less link
+	$('#user-about-showless').live('click', elgg.roles.showLessClick);
+
+	// Click handler for description show more link
+	$('#user-about-showmore').live('click', elgg.roles.showMoreClick);
 }
 
 elgg.roles.populated_module = function(event, type, params, value) {
@@ -324,6 +330,24 @@ elgg.roles.add_user = function(event) {
 		}
 	});
 	
+	event.preventDefault();
+}
+
+/**
+ * Click handler for description show less link
+ */
+elgg.roles.showLessClick = function(event) {
+	$('#user-about-full').hide();
+	$('#user-about-excerpt').show();
+	event.preventDefault();
+}
+
+/**
+ * Click handler for description show more link
+ */
+elgg.roles.showMoreClick = function(event) {
+	$('#user-about-excerpt').hide();
+	$('#user-about-full').show();
 	event.preventDefault();
 }
 

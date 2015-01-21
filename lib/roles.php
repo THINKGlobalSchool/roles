@@ -451,20 +451,30 @@ function get_user_dashboard_roles($user_guid = 0) {
  * @param  int    $role_guid Specific role to grab tabs for
  * @return array
  */
-function get_user_dashboard_tabs($user_guid = 0, $role_guid = 0) {
+function get_user_tabs($user_guid = 0, $role_guid = 0, $subtype = NULL) {
 	if (!$user_guid) {
 		$user_guid = elgg_get_logged_in_user_guid();
+	}
+
+	if (!$subtype) {
+		return FALSE;
+	}
+
+	if ($subtype == 'role_dashboard_tab') {
+		$relationship = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+	} else if ($subtype == 'role_profile_tab') {
+		$relationship = ROLE_PROFILE_TAB_RELATIONSHIP;
 	}
 
 	$dbprefix = elgg_get_config('dbprefix');
 	$user_guid = elgg_get_logged_in_user_guid();
 	$rr = ROLE_RELATIONSHIP;
-	$tr = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+	$tr = $relationship;
 
 	// Get all tabs, sorted by priority
 	$tab_options = array(
 		'type' => 'object',
-		'subtype' => 'role_dashboard_tab',
+		'subtype' => $subtype,
 		'limit' => 0,
 		'order_by_metadata' => array(
 			'name' => 'priority',
@@ -497,7 +507,7 @@ function get_user_dashboard_tabs($user_guid = 0, $role_guid = 0) {
 		// Remove all other default tabs (only one)
 		$default_tabs = elgg_get_entities_from_metadata(array(
 			'type' => 'object',
-			'subtype' => 'role_dashboard_tab',
+			'subtype' => $subtype,
 			'limit' => 1, // There is only ever one default
 			'metadata_name' => 'default_tab',
 			'metadata_value' => 1,
@@ -530,4 +540,38 @@ function roles_extend_widget_views($view, $view_extension, $priority = 501) {
 			}
 		}
 	}
+}
+
+/**
+ * Modified version of the elgg get excerpt function
+ * that doesn't butcher tags
+ *
+ * @param string $text      The full text to excerpt
+ * @param int    $num_chars Return a string up to $num_chars long
+ *
+ * @return string
+ */
+function roles_get_excerpt($text, $num_chars = 250) {
+	$text = trim($text);
+	$string_length = elgg_strlen($text);
+
+	if ($string_length <= $num_chars) {
+		return $text;
+	}
+
+	// handle cases
+	$excerpt = elgg_substr($text, 0, $num_chars);
+	$space = elgg_strrpos($excerpt, ' ', 0);
+
+	// don't crop if can't find a space.
+	if ($space === FALSE) {
+		$space = $num_chars;
+	}
+	$excerpt = trim(elgg_substr($excerpt, 0, $space));
+
+	if ($string_length != elgg_strlen($excerpt)) {
+		$excerpt .= '...';
+	}
+
+	return $excerpt;
 }

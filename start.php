@@ -18,6 +18,7 @@
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
+elgg_register_event_handler('pagesetup', 'system', 'roles_pagesetup',501);
 
 function roles_init() {	
 	
@@ -132,10 +133,37 @@ function roles_init() {
 	// Extend all role widget edit views
 	roles_extend_widget_views('edit', 'widgets/role_edit');
 
+	// Url handler (for user profile links)
+	elgg_register_entity_url_handler('user', 'all', 'roles_profile_url_handle');
+
 	// Register one once for subtype
 	run_function_once("roles_run_once");
 
 	return true;
+}
+
+/**
+ * Roles pagesetup event handler
+ */
+function roles_pagesetup() {
+	// Allow plugins to register dynamic role widget titles
+	$user = elgg_get_page_owner_entity();
+
+	// Make the role profile widget titles dynamic
+	if (!elgg_in_context('admin_widgets')) {
+		$params = array(
+			'user' => $user,
+			'context' => elgg_get_context()
+		);
+
+		$dynamic_handlers = elgg_trigger_plugin_hook('get_dynamic_handlers', 'role_widgets', $params, array());
+
+		global $CONFIG;
+
+		foreach ($dynamic_handlers as $handler => $title) {
+			$CONFIG->widgets->handlers[$handler]->name = $title;
+		}
+	}
 }
 
 /**
@@ -151,6 +179,7 @@ function roles_page_handler($page) {
 				echo elgg_view('roles/users', array('guid' => $guid));
 				break;
 			case 'loadwidgets':
+				elgg_set_context('admin_widgets');
 				$guid = sanitise_string(get_input('guid'));
 				echo elgg_view('roles/widgets', array('guid' => $guid));
 				break;
@@ -179,7 +208,7 @@ function roles_home_page_handler($page) {
 	elgg_load_js('elgg.roles');
 	elgg_load_css('elgg.roles');
 
-	$tabs = get_user_dashboard_tabs(0, get_input('role', 0));
+	$tabs = get_user_tabs(0, get_input('role', 0), 'role_dashboard_tab');
 
 	// No tabs? Show an error and get out of here
 	if (!$tabs) {
@@ -205,9 +234,10 @@ function roles_home_page_handler($page) {
 	$content = elgg_view('roles/dashboard/content') . $menu;
 
 	$params = array(
-		'tab_guid' => $tab_guid,
+		'guid' => $tab_guid,
 		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
-		'content' => $content
+		'content' => $content,
+		'widget_type' => 'rolewidget'
 	);
 
 	set_input('custom_widget_controls', TRUE);
@@ -225,7 +255,6 @@ function roles_home_page_handler($page) {
 function roles_profile_page_handler($page) {
 	elgg_load_js('elgg.roles');
 	elgg_load_css('elgg.roles');
-
 
 	global $CONFIG;
 
@@ -253,24 +282,10 @@ function roles_profile_page_handler($page) {
 			return;
 			break;
 		default:
-			if (isset($page[1])) {
-				$section = $page[1];
-			} else {
-				$section = 'activity';
-			}
-			$content = tabbed_profile_layout_page($user, $section);
-			$body = elgg_view_layout('one_column', array(
-				'content' => $content,
-				'class' => 'tabbed-profile',
-			));
-			break;
+
 	}
 
-	echo elgg_view_page($title, $body);
-
-
-
-	$tabs = get_user_dashboard_tabs(0, get_input('role', 0));
+	$tabs = get_user_tabs($user->guid, get_input('role', 0), 'role_profile_tab');
 
 	// No tabs? Show an error and get out of here
 	if (!$tabs) {
@@ -293,17 +308,18 @@ function roles_profile_page_handler($page) {
 		$top_class = "border-top";
 	}
 
-	$content = elgg_view('roles/dashboard/content') . $menu;
+	$content = elgg_view('roles/profile/user', array('user' => $user));
 
 	$params = array(
-		'tab_guid' => $tab_guid,
+		'guid' => $tab_guid,
 		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
-		'content' => $content
+		'content' => $content,
+		'widget_type' => 'roleprofilewidget'
 	);
 
 	set_input('custom_widget_controls', TRUE);
 	$body = elgg_view_layout('role_widgets', $params);
-	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
+	echo elgg_view_page($user->name, $body);
 }
 
 /**
@@ -682,6 +698,16 @@ function roles_save($event, $object_type, $object) {
 		}
 	}
 	return TRUE;
+}
+
+/**
+ * Profile URL generator for $user->getUrl();
+ *
+ * @param ElggUser $user
+ * @return string User URL
+ */
+function roles_profile_url_handle($user) {
+	return elgg_get_site_url() . "profile/" . $user->username;
 }
 
 /**

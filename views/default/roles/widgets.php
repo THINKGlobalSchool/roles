@@ -5,7 +5,7 @@
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -31,6 +31,7 @@ $params = array(
 );
 
 elgg_push_context('admin_widgets');
+
 $content = elgg_view_layout('role_widgets', $params);
 
 $available_label = elgg_echo('roles:label:availablewidgets');

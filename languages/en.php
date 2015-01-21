@@ -60,6 +60,16 @@ $english = array(
 	'roles:label:hide_empty' => 'Hide empty widget',
 	'roles:label:selectrole' => 'Select a role',
 	
+	// Profile Labels
+	'roles:profile:nodescription' => 'No description...',
+	'roles:profile:showless' => '« Less',
+	'roles:profile:showmore' => 'More »',
+	'roles:profile:twitter' => 'Tw:',
+	'roles:profile:phone' => 'Ph:',
+	'roles:profile:mobile' => 'Mb:',
+	'roles:profile:website' => 'Web:',
+	'roles:profile:email' => 'Em:',
+
 	// River
 	
 	// Messages
@@ -81,7 +91,7 @@ $english = array(
 	'roles:error:remove' => 'There was an error removing the user from the role',
 	'roles:error:add' => 'There was an error adding the user to the role',
 	'roles:error:existing' => '%s is already a member of the role %s',
-	'roles:error:invaliddashboard' => 'Invalid role or missing tab dashbaord',
+	'roles:error:invaliddashboard' => 'Invalid role or missing tab profile/dashbaord',
 	'roles:error:tabassigned' => 'There was an error assigning the tab',
 	'roles:error:tabunassigned' => 'There was an error unassigning the tab',
 	'roles:success:add' => 'Successfully added user to role %s',
