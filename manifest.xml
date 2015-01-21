@@ -8,11 +8,19 @@
 	<blurb>TGS Roles</blurb>
 	<description>Simple role management</description>
 	<website>http://www.thinkglobalschool.org/</website>
-	<copyright>THINK Global School 2010 - 2014</copyright>
+	<copyright>THINK Global School 2010 - 2015</copyright>
 	<license>GNU Public License version 2</license>
 	<requires>
 		<type>elgg_release</type>
 		<version>1.8</version>
 	</requires>
+	<conflicts>
+		<type>plugin</type>
+		<name>tabbed_profile</name>
+	</conflicts>
+	<conflicts>
+		<type>plugin</type>
+		<name>profile</name>
+	</conflicts>
 	<activate_on_install>true</activate_on_install>
 </plugin_manifest>
