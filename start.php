@@ -308,7 +308,7 @@ function roles_profile_page_handler($page) {
 		$top_class = "border-top";
 	}
 
-	$content = elgg_view('roles/profile/user', array('user' => $user));
+	$content = elgg_view('roles/profile/user', array('user' => $user)) . $menu;
 
 	$params = array(
 		'guid' => $tab_guid,
