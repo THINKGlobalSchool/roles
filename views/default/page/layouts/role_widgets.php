@@ -67,7 +67,6 @@ for ($column_index = 1; $column_index <= $num_columns; $column_index++) {
 	if (sizeof($column_widgets) > 0) {
 		foreach ($column_widgets as $widget) {
 			if (array_key_exists($widget->handler, $widget_types)) {
-				//$widget->title = 'asdsads';
 				echo elgg_view_entity($widget, array('show_access' => $show_access));
 			}
 		}

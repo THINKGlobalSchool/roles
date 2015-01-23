@@ -69,9 +69,11 @@ $widget_header = <<<HEADER
 	</div>
 HEADER;
 
+$page_owner = elgg_get_page_owner_guid();
+
 $widget_body = <<<BODY
 	$edit_area
-	<div class="elgg-widget-content" id="elgg-widget-content-$widget->guid">
+	<div class="elgg-widget-content" id="elgg-widget-content-$widget->guid" data-page_owner="{$page_owner}">
 		$content
 	</div>
 BODY;

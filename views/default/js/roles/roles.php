@@ -150,39 +150,16 @@ elgg.roles.generic_populated_module = function(event, type, params, value) {
 }
 
 // Init ajax widgets
-elgg.roles.initAjaxWidgets = function() {
-	$('.elgg-layout-one-sidebar-roles-home .elgg-widget-content').each(function() {
-		console.log('sup');
-		return;
-		var data = "?t=1"
-
-		$(container).find('div.options').find('input').each(function() {
-			data += "&" + $(this).attr('id') + "=" + $(this).val() 
-		});
-		
-		var view = container.attr('name');
-
-		$content_box = container.find('div.content');
-
-		$content_box.html("<div class='elgg-ajax-loader'></div>");
-
-		$content_box.load(elgg.get_site_url() + 'ajax/view/' + view + data, function(){
-			elgg.trigger_hook('widget_populated', 'modules', {container: container});
-
-			// Trigger the generic hook as well (from modules)
-			elgg.trigger_hook('generic_populated', 'modules', {container: container});
-		});
-	});
-	
+elgg.roles.initAjaxWidgets = function() {	
 	// Make pagination load in the container
 	$(document).delegate('.elgg-layout-one-sidebar-roles-home .elgg-widget-content .elgg-pagination a','click', function(event) {
 		var href = $(this).attr('href');
-		if (href.indexOf('ajax/view') > -1 && href.indexOf('ajax/view/widgets') == -1) {
+		if (href.indexOf('ajax/view') > -1 && href.indexOf('ajax/view/widgets') == -1 ) {
 			return true;
 		}
 	
 		// Find the offset
-		var offset = href.substring(href.indexOf('offset'));
+		var offset = href.substring(href.indexOf('offset') + 7);
 
 		// Determine widget view
 		var widget_view = $.grep($(this).closest('.elgg-module-widget').attr('class').split(" "), function(v, i){
@@ -193,16 +170,32 @@ elgg.roles.initAjaxWidgets = function() {
 
 		$container = $(this).closest('.elgg-widget-content');
 
+		var page_owner = $container.data('page_owner');
+
 		var height = $container.height();
 
-		var endpoint = elgg.get_site_url() + 'ajax/view/widgets/' + widget_view + '/content?'  + offset;
+		var endpoint = elgg.get_site_url() + 'ajax/view/widgets/' + widget_view + '/content';
 
 		$container.html("<div style='height: 100%' class='elgg-ajax-loader'></div>").css({
 			'height': height,
-		}).load(endpoint, function() {
-			$(this).css({'height':'auto'});
-			// Trigger a hook that pagination content loaded
-			elgg.trigger_hook('pagination_content_loaded', 'modules');
+		});
+
+		elgg.get(endpoint, {
+			data: {
+				user: page_owner,
+				offset: offset
+			}, 
+			success: function(data) {
+				if (data) {
+					$container.css({'height':'auto'});
+					$container.html(data);
+
+					// Trigger a hook that pagination content loaded
+					elgg.trigger_hook('pagination_content_loaded', 'modules');
+				} else {
+					// error
+				}
+			}
 		});
 
 		event.stopPropagation(); // Don't propagate the click event.. this messes with popups, etc
