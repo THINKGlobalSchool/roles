@@ -42,6 +42,9 @@ elgg.roles.init = function() {
 
 	// Click handler for description show more link
 	$('#user-about-showmore').live('click', elgg.roles.showMoreClick);
+
+	// Init ajax widgets
+	elgg.roles.initAjaxWidgets();
 }
 
 elgg.roles.populated_module = function(event, type, params, value) {
@@ -144,6 +147,67 @@ elgg.roles.generic_populated_module = function(event, type, params, value) {
 	}
 
 
+}
+
+// Init ajax widgets
+elgg.roles.initAjaxWidgets = function() {
+	$('.elgg-layout-one-sidebar-roles-home .elgg-widget-content').each(function() {
+		console.log('sup');
+		return;
+		var data = "?t=1"
+
+		$(container).find('div.options').find('input').each(function() {
+			data += "&" + $(this).attr('id') + "=" + $(this).val() 
+		});
+		
+		var view = container.attr('name');
+
+		$content_box = container.find('div.content');
+
+		$content_box.html("<div class='elgg-ajax-loader'></div>");
+
+		$content_box.load(elgg.get_site_url() + 'ajax/view/' + view + data, function(){
+			elgg.trigger_hook('widget_populated', 'modules', {container: container});
+
+			// Trigger the generic hook as well (from modules)
+			elgg.trigger_hook('generic_populated', 'modules', {container: container});
+		});
+	});
+	
+	// Make pagination load in the container
+	$(document).delegate('.elgg-layout-one-sidebar-roles-home .elgg-widget-content .elgg-pagination a','click', function(event) {
+		var href = $(this).attr('href');
+		if (href.indexOf('ajax/view') > -1 && href.indexOf('ajax/view/widgets') == -1) {
+			return true;
+		}
+	
+		// Find the offset
+		var offset = href.substring(href.indexOf('offset'));
+
+		// Determine widget view
+		var widget_view = $.grep($(this).closest('.elgg-module-widget').attr('class').split(" "), function(v, i){
+	    	return v.indexOf('elgg-widget-instance') === 0;
+	   	}).join();
+
+	   	widget_view = widget_view.substring(widget_view.indexOf('elgg-widget-instance') + 21);
+
+		$container = $(this).closest('.elgg-widget-content');
+
+		var height = $container.height();
+
+		var endpoint = elgg.get_site_url() + 'ajax/view/widgets/' + widget_view + '/content?'  + offset;
+
+		$container.html("<div style='height: 100%' class='elgg-ajax-loader'></div>").css({
+			'height': height,
+		}).load(endpoint, function() {
+			$(this).css({'height':'auto'});
+			// Trigger a hook that pagination content loaded
+			elgg.trigger_hook('pagination_content_loaded', 'modules');
+		});
+
+		event.stopPropagation(); // Don't propagate the click event.. this messes with popups, etc
+		event.preventDefault();
+	});
 }
 
 // Load users by role
