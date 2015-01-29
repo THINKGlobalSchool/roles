@@ -74,9 +74,23 @@ if (!$user->bg_icontime) {
 	$background_style = "style='background: url($url);'";
 }
 
+// Add edit background button
+if ($user->canEdit()) {
+	$edit_button = elgg_view('output/url', array(
+		'text' => elgg_view('input/button', array(
+			'name' => 'editbackground',
+			'value' => elgg_echo('roles:profile:editbgshort'),
+			'class' => 'elgg-button-action',
+			'id' => 'edit-background-profile'
+		)),
+		'href' => elgg_normalize_url("background/edit/{$user->username}")
+	));
+}
+
 echo "<div class='roles-profile-user-avatar-block {$background_class}' {$background_style}>
 	$icon
 	$menu_content
+	$edit_button
 </div>";
 
 $widget_class = "elgg-col-1of{$num_columns}";

@@ -66,6 +66,7 @@ $english = array(
 	'roles:profile:showmore' => 'More »',
 	'roles:profile:joined' => 'User since %s', 
 	'roles:profile:editbackground' => 'Edit background picture',
+	'roles:profile:editbgshort' => 'Edit Background',
 
 
 	'roles:profile:create' => 'Create your background',

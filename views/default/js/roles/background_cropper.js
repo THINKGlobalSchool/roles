@@ -15,7 +15,8 @@ elgg.backgroundCropper.init = function() {
 		selectionOpacity: 0,
 		onSelectEnd: elgg.backgroundCropper.selectChange,
 		onSelectChange: elgg.backgroundCropper.preview,
-		handles: true
+		handles: true,
+		aspectRatio: "121:25"
 	};
 
 	if ($('input[name=bg_x2]').val()) {

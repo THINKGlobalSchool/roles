@@ -51,9 +51,17 @@
 .roles-profile-user-avatar-block {
 	margin: 0 10px 15px;
 	height: 200px;
+	width: 968px;
 	border-color: #ccc;
 	border-style: solid;
 	border-width: 0 1px 2px;
+	position: relative;
+}
+
+.roles-profile-user-avatar-block:hover #edit-background-profile {
+	display: block;
+	top:  150px;
+	right: 20px;
 }
 
 .no-bg {
@@ -159,5 +167,11 @@ img#user-background-cropper {
 
 #current-user-background.upload-no-bg img {
 	width: auto;
+}
+
+#edit-background-profile {
+	display: none;
+	position: absolute;
+	z-index: 1000;
 }
 

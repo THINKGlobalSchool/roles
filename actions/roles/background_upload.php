@@ -27,14 +27,30 @@ if ($_FILES['background']['error'] != 0) {
 $files = array();
 
 try {
+	// Create and open file to guarantee it and it's directory exist
 	$file = new ElggFile();
 	$file->owner_guid = $guid;
 	$file->setFilename("background/{$guid}_background_master.jpg");
 	$file->open('write');
-	$file->close();
 
-	// Put the file in place
-	move_uploaded_file($_FILES['background']['tmp_name'], $file->getFilenameOnFilestore());
+
+
+	// Get file size info
+	$size_info = getimagesize($_FILES['background']['tmp_name']);
+
+	if ($size_info[0] > PROFILE_BACKGROUND_WIDTH) {
+		$max_width = PROFILE_BACKGROUND_WIDTH * 1.5;
+
+		// Resize the image
+		$resized = get_resized_image_from_uploaded_file('background', $max_width, $size_info[1], false, false);
+		
+		$file->write($resized);
+		$file->close();
+	} else {
+		// File is smaller than the background area, just the file in place
+		$file->close();
+		move_uploaded_file($_FILES['background']['tmp_name'], $file->getFilenameOnFilestore());
+	}
 	
 	$files[] = $file;
 
@@ -51,6 +67,7 @@ try {
 
 } catch (Exception $e) {
 	foreach ($files as $file) {
+		$file->close();
 		$file->delete();
 	}
 	register_error(elgg_echo('roles:error:backgroundupload'));
