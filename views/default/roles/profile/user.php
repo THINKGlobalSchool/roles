@@ -13,8 +13,6 @@
 
 $user = elgg_extract('user', $vars);
 
-$icon = elgg_view_entity_icon($user, 'large');
-
 $user_name = $user->name;
 
 $unavailable = 'roles-profile-unavailable-field';
@@ -71,9 +69,12 @@ $user_link = elgg_view('output/url', array(
 
 $user_brief = $user->briefdescription;
 
+$user_location = $user->location;
+$user_joined = elgg_echo('roles:profile:joined', array(date("F Y", $user->time_created)));
+
 // Check for contact values
 if ($user->twitter) {
-	$twitter_label = elgg_echo('roles:profile:twitter');
+	$twitter_label = '<i class="fa fa-fw fa-lg fa-twitter-square"></i>';
 	$twitter_url = "https://twitter.com/{$user->twitter}";
 	$twitter_link = elgg_view('output/url', array(
 		'text' => $twitter_url,
@@ -83,7 +84,7 @@ if ($user->twitter) {
 }
 
 if ($user->website) {
-	$website_label = elgg_echo('roles:profile:website');
+	$website_label = '<i class="fa fa-fw fa-lg fa-globe"></i>';
 	$website_link = elgg_view('output/url', array(
 		'text' => $user->website,
 		'value' => $user->website
@@ -92,7 +93,7 @@ if ($user->website) {
 }
 
 if ($user->email) {
-	$email_label = elgg_echo('roles:profile:email');
+	$email_label = '<i class="fa fa-fw fa-lg fa-envelope-square"></i>';
 	$email_link = elgg_view('output/url', array(
 		'text' => $user->email,
 		'value' => $user->email
@@ -101,7 +102,7 @@ if ($user->email) {
 }
 
 if ($user->phone) {
-	$phone_label = elgg_echo('roles:profile:phone');
+	$phone_label = '<i class="fa fa-fw fa-lg fa-phone-square"></i>';
 	$phone_link = elgg_view('output/url', array(
 		'text' => $user->phone,
 		'value' => $user->phone
@@ -110,7 +111,7 @@ if ($user->phone) {
 }
 
 if ($user->mobile) {
-	$mobile_label = elgg_echo('roles:profile:mobile');
+	$mobile_label = '<i class="fa fa-fw fa-lg fa-mobile"></i>';
 	$mobile_link = elgg_view('output/url', array(
 		'text' => $user->mobile,
 		'value' => $user->mobile
@@ -120,30 +121,24 @@ if ($user->mobile) {
 
 $content = <<<HTML
 	<div class='roles-profile-user-block'>
-		<div class='roles-profile-user-block-avatar-container'>
-			$icon
-		</div>
 		<div class='roles-profile-user-block-about-container'>
 			<div class='roles-profile-user-block-about-header'>
 				<h1>$user_link</h1>
 			</div>
 			<div class='roles-profile-user-block-about-meta'></div>
 			<div class='roles-profile-user-block-about-content $user_about_class'>
+				<div class='user-location'><i class="fa fa-fw fa-lg fa-map-marker"></i>$user_location</div>
+				<div class='user-joined'><i class="fa fa-fw fa-lg fa-clock-o"></i>$user_joined</div>
 				<div class='user-brief'>$user_brief</div>
 				$user_about
 			</div>
 			<div class='roles-profile-user-block-contact-container'>
-				<div class='contact-top'>
-					$twitter$website
-				</div>
-				<div class='clearfix'>
-				</div>
-				<div class='contact-bottom'>
-					$phone$mobile$email
-				</div>
+				$twitter$website$email$phone$mobile
 			</div>
 		</div>
 	</div>
 HTML;
+
+$content = elgg_view_module('widget', '', $content);
 
 echo $content;

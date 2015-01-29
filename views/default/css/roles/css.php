@@ -12,11 +12,9 @@
 ?>
 /** Roles homepage **/
 .elgg-layout-one-sidebar-roles-home.border-top div#elgg-widget-col-2 {
-	border-top: 2px solid #AAA;
 }
 
 .elgg-layout-one-sidebar-roles-home.border-top div#elgg-widget-col-1 {
-	border-top: 2px solid #DDD;
 }
 
 .elgg-menu-role-tab-menu {
@@ -35,8 +33,7 @@
 
 /** Role profiles **/
 .roles-profile-user-block {
-	padding: 10px 0 10px 0;
-	min-height: 200px;
+	padding: 45px 15px 15px 15px;
 }
 
 .roles-profile-user-block:before,
@@ -51,17 +48,53 @@
   zoom:1; /* For IE 6/7 (trigger hasLayout) */
 }
 
-.roles-profile-user-block-avatar-container {
+.roles-profile-user-avatar-block {
+	margin: 0 10px 15px;
 	height: 200px;
-	width: 200px;
-	border: 1px solid #AAA;
-	box-shadow: 0px 0px 4px #999;
-	float: left;
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 0 1px 2px;
+}
+
+.no-bg {
+-webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -o-text-overflow: clip;
+  text-overflow: clip;
+  background: -webkit-linear-gradient(60deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -webkit-linear-gradient(-60deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -webkit-linear-gradient(60deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -webkit-linear-gradient(-60deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -webkit-linear-gradient(30deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), -webkit-linear-gradient(30deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), rgb(170, 170, 170);
+  background: -moz-linear-gradient(30deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -moz-linear-gradient(150deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -moz-linear-gradient(30deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -moz-linear-gradient(150deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), -moz-linear-gradient(60deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), -moz-linear-gradient(60deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), rgb(170, 170, 170);
+  background: linear-gradient(30deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), linear-gradient(150deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), linear-gradient(30deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), linear-gradient(150deg, rgb(153,153,153) 12%, rgba(0,0,0,0) 12.5%, rgba(0,0,0,0) 87%, rgb(153,153,153) 87.5%, rgb(153,153,153) 0), linear-gradient(60deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), linear-gradient(60deg, rgb(187,187,187) 25%, rgba(0,0,0,0) 25.5%, rgba(0,0,0,0) 75%, rgb(187,187,187) 75%, rgb(187,187,187) 0), rgb(170, 170, 170);
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+  -webkit-background-origin: padding-box;
+  background-origin: padding-box;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-background-size: 80px 140px;
+  background-size: 80px 140px;
+  height: 200px;
+}
+
+.roles-profile-user-avatar-block .roles-profile-user-avatar-block-menu {
+	margin-left: 230px;
+    position: relative;
+    top: -37px;
+}
+
+.roles-profile-user-avatar-block .elgg-avatar {
+	background: none repeat scroll 0 0 #fff;
+    border: 1px solid #aaa;
+    box-shadow: 0 0 2px #aaa;
+    margin: 0 15px;
+    padding: 2px;
+    position: relative;
+    top: 60px;
+    width: 200px;
+    z-index: 1000;
 }
 
 .roles-profile-user-block-about-container {
-	width: 780px;
-	float: right;
+
 }
 
 .roles-profile-user-block-about-header {
@@ -77,7 +110,7 @@
 .roles-profile-user-block-about-content .user-brief {
 	color: #666;
 	font-style: italic;
-	padding-top: 3px;
+	padding-top: 10px;
 }
 
 .roles-profile-unavailable-field {
@@ -89,28 +122,42 @@
 	color: #333;
 }
 
-.roles-profile-user-block-contact-container .contact-top, .roles-profile-user-block-contact-container .contact-bottom {
+.roles-profile-user-block-contact-container {
 	width: 100%;
 	font-weight: bold;
 }
 
-.roles-profile-user-block-contact-container .contact-top > div, .roles-profile-user-block-contact-container .contact-bottom > div {
-	float: left;
-	padding-right: 4px;
-}
-
-.roles-profile-user-block-contact-container .contact-top > div:after, .roles-profile-user-block-contact-container .contact-bottom > div:after {
-	content: ' | ';
-	color: #999;
-}
-
-.roles-profile-user-block-contact-container .contact-top > div:only-of-type:after, .roles-profile-user-block-contact-container .contact-bottom > div:only-of-type:after {
-	content: none;
-}
-
-.roles-profile-user-block-contact-container .contact-top > div:last-child:after, .roles-profile-user-block-contact-container .contact-bottom > div:last-child:after {
-	content: none;
-}
 .roles-profile-user-block-contact-container label:after {
 	content: ' ';
 }
+
+/** Profile Background Photo **/
+#current-user-background {
+	border-right:1px solid #ccc;
+}
+
+#user-background-preview {
+	float: left;
+	position: relative;
+	overflow: hidden;
+	height: 156px;
+	width: 720px;
+}
+
+#user-background-preview-canvas {
+	height: 156px;
+	width: <?php echo PROFILE_BACKGROUND_PREVIEW_WIDTH; ?>px;
+}
+
+#current-user-background {
+	height: 156px;
+}
+
+img#user-background-cropper {
+	max-width: <?php echo PROFILE_BACKGROUND_PREVIEW_WIDTH; ?>px;
+}
+
+#current-user-background.upload-no-bg img {
+	width: auto;
+}
+

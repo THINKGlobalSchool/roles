@@ -64,11 +64,18 @@ $english = array(
 	'roles:profile:nodescription' => 'No description...',
 	'roles:profile:showless' => '« Less',
 	'roles:profile:showmore' => 'More »',
-	'roles:profile:twitter' => 'Tw:',
-	'roles:profile:phone' => 'Ph:',
-	'roles:profile:mobile' => 'Mb:',
-	'roles:profile:website' => 'Web:',
-	'roles:profile:email' => 'Em:',
+	'roles:profile:joined' => 'User since %s', 
+	'roles:profile:editbackground' => 'Edit background picture',
+
+
+	'roles:profile:create' => 'Create your background',
+	'roles:profile:preview' => 'Preview',
+	'roles:profile:upload' => 'Upload a new background',
+	'roles:profile:current' => 'Current background',
+	'roles:profile:remove' => 'Remove your background',
+	'roles:profile:backgroundcrop' => 'Background cropping tool',
+	'roles:profile:backgroundinstructions' => "Your backround is displayed on your profile. You can change it as often as you'd like. (File formats accepted: GIF, JPG or PNG)",
+	'roles:profile:backgroundcropinstructions' => 'Click and drag a box below to match how you want your background cropped. A preview will appear in the box on the right. When you are happy with the preview, click \'Create your background\'. This cropped version will be used on your profile.',
 
 	// River
 	
@@ -94,6 +101,15 @@ $english = array(
 	'roles:error:invaliddashboard' => 'Invalid role or missing tab profile/dashbaord',
 	'roles:error:tabassigned' => 'There was an error assigning the tab',
 	'roles:error:tabunassigned' => 'There was an error unassigning the tab',
+	'roles:error:backgroundnoaccess' => "You're not allowed to edit this user's background",
+	'roles:error:backgroundupload' => 'Background upload failed',
+	'roles:error:backgroundresize' => 'Resize of the background failed',
+	'roles:error:backgroundcrop' => 'Background cropping failed',
+	'roles:error:backgroundremove' => 'Background remove failed',
+
+	'roles:success:backgroundupload' => 'Background successfully uploaded',
+	'roles:success:backgroundcrop' => 'Cropping the background succeeded',
+	'roles:success:backgroundremove' => 'Removing the background succeeded',
 	'roles:success:add' => 'Successfully added user to role %s',
 	'roles:success:remove' => 'Successfully removed user from role %s',
 	'roles:success:save' => 'Successfully Saved Role',

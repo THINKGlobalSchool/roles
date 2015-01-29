@@ -575,3 +575,15 @@ function roles_get_excerpt($text, $num_chars = 250) {
 
 	return $excerpt;
 }
+
+/**
+ * Get the user's background photo url
+ *
+ * @param ElggUser $user
+ */
+function roles_get_user_background_url($user, $type = FALSE) {
+	if ($type) {
+		$background_type = "/{$type}";
+	}
+	return "background/view/{$user->username}/{$user->bg_icontime}{$background_type}";
+}
