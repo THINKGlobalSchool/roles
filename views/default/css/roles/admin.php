@@ -51,3 +51,8 @@ li.elgg-item:hover {
 #tab-list-output .elgg-menu-item-remove a {
 	color: #FFFFFF;
 }
+
+/** Draggable stuff **/
+#profile-list li.elgg-state-draggable, #tab-list li.elgg-state-draggable {
+	cursor: move;
+}

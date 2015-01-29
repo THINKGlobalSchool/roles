@@ -131,6 +131,7 @@ function roles_init() {
 	elgg_register_action('roles/deleteprofiletab', "$action_base/deleteprofiletab.php", 'admin');
 	elgg_register_action('roles/assigntab', "$action_base/assigntab.php", 'admin');
 	elgg_register_action('roles/unassigntab', "$action_base/unassigntab.php", 'admin');
+	elgg_register_action('roles/set_tab_priority', "$action_base/set_tab_priority.php", 'admin');
 	elgg_register_action('roles/background_upload', "$action_base/background_upload.php");
 	elgg_register_action('roles/background_crop', "$action_base/background_crop.php");
 	elgg_register_action('roles/background_remove', "$action_base/background_remove.php");

@@ -13,7 +13,7 @@
 $options = array(
 	'type' => 'object',
 	'subtype' => 'role',
-	'limit' => 10,
+	'limit' => 0,
 	'full_view' => FALSE,
 	'metadata_name' => 'profile',
 	'metadata_value' => 1,

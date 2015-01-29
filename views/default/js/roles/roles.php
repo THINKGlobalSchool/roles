@@ -145,8 +145,7 @@ elgg.roles.generic_populated_module = function(event, type, params, value) {
 			});
 		});
 	}
-
-
+	elgg.roles.initSortableTabs();
 }
 
 // Init ajax widgets
@@ -406,6 +405,36 @@ elgg.roles.showMoreClick = function(event) {
 	$('#user-about-excerpt').hide();
 	$('#user-about-full').show();
 	event.preventDefault();
+}
+
+// Init sortable tab lists
+elgg.roles.initSortableTabs = function() {
+	// Init draggable items
+	$('#profile-list ul.elgg-list-entity > li, #tab-list ul.elgg-list-entity > li').each(function(idx) {
+		$(this).addClass('elgg-state-draggable');
+	});
+
+	$('#profile-list ul.elgg-list-entity, #tab-list ul.elgg-list-entity	').sortable({
+		opacity: 0.8,
+		revert: 500,
+		stop: elgg.roles.rePrioritizeItem,
+		helper: 'clone' // Causes click events not to fire
+	});
+}
+
+// Re-prioritize tab items (stop handler for sortable items)
+elgg.roles.rePrioritizeItem = function(event, ui) {
+	// get guid from id like elgg-object-<guid>
+	var item_guid = ui.item.attr('id');
+	item_guid = item_guid.replace('elgg-object-', '');
+
+	elgg.action('roles/set_tab_priority', {
+		data: {
+				tab_guid: item_guid,
+				// we start at priority 1
+				priority: ui.item.index() + 1
+			}
+	});
 }
 
 elgg.register_hook_handler('init', 'system', elgg.roles.init);

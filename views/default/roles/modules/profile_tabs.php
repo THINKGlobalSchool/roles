@@ -13,8 +13,9 @@
 $options = array(
 	'type' => 'object',
 	'subtype' => 'role_profile_tab',
-	'limit' => 10,
+	'limit' => 0,
 	'full_view' => FALSE,
+	'order_by_metadata' => array('name' => 'priority')
 );
 
 $content = elgg_list_entities_from_metadata($options);

@@ -96,6 +96,7 @@ $english = array(
 	'roles:error:invaliduser' => 'Invalid User (%s)',
 	'roles:error:userrequired' => 'Need at least one user',
 	'roles:error:invalidrole' => 'Invalid Role',
+	'roles:error:invalidtab' => 'Invalid Tab',
 	'roles:error:remove' => 'There was an error removing the user from the role',
 	'roles:error:add' => 'There was an error adding the user to the role',
 	'roles:error:existing' => '%s is already a member of the role %s',
@@ -107,6 +108,7 @@ $english = array(
 	'roles:error:backgroundresize' => 'Resize of the background failed',
 	'roles:error:backgroundcrop' => 'Background cropping failed',
 	'roles:error:backgroundremove' => 'Background remove failed',
+	'roles:error:setpriority' => 'There was an error setting the priority',
 
 	'roles:success:backgroundupload' => 'Background successfully uploaded',
 	'roles:success:backgroundcrop' => 'Cropping the background succeeded',

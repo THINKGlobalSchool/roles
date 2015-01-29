@@ -174,4 +174,3 @@ img#user-background-cropper {
 	position: absolute;
 	z-index: 1000;
 }
-

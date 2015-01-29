@@ -15,6 +15,7 @@ $options = array(
 	'subtype' => 'role_dashboard_tab',
 	'limit' => 10,
 	'full_view' => FALSE,
+	'order_by_metadata' => array('name' => 'priority')
 );
 
 $content = elgg_list_entities_from_metadata($options);

@@ -587,3 +587,25 @@ function roles_get_user_background_url($user, $type = FALSE) {
 	}
 	return "background/view/{$user->username}/{$user->bg_icontime}{$background_type}";
 }
+
+/**
+ * Set tab priority
+ */
+function roles_set_tab_priority($tab, $priority) {
+	$subtype = $tab->getSubtype();
+
+	$tabs = elgg_get_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => $subtype,
+		'limit' => 0,
+		'metadata_name' => 'priority',
+		'metadata_value' => $priority
+	));
+
+	$tab->priority = $priority;
+
+	foreach ($tabs as $t) {
+		roles_set_tab_priority($t, $priority + 1);
+	}
+	return TRUE;
+}
