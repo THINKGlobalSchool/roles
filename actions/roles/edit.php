@@ -15,6 +15,7 @@ $title = get_input('title');
 $description = get_input('description');
 $hidden = get_input('hidden', 0);
 $dashboard = get_input('dashboard', 0);
+$profile = get_input('profile', 0);
 $role_guid = get_input('role_guid', NULL);
 
 // Create Sticky form
@@ -44,6 +45,7 @@ $role->title = $title;
 $role->description = $description;
 $role->hidden = $hidden;
 $role->dashboard = $dashboard;
+$role->profile = $profile;
 
 // Try saving
 if (!$role->save()) {

@@ -5,7 +5,7 @@
  * @package TGSRoles
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013		
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  * @TODO 
@@ -18,6 +18,7 @@
  */
 
 elgg_register_event_handler('init', 'system', 'roles_init');
+elgg_register_event_handler('pagesetup', 'system', 'roles_pagesetup',501);
 
 function roles_init() {	
 	
@@ -31,6 +32,11 @@ function roles_init() {
 	// Define relationships
 	define('ROLE_RELATIONSHIP', 'member_of_role');
 	define('ROLE_DASHBOARD_TAB_RELATIONSHIP', 'dashboard_tab_assigned_to_role');
+	define('ROLE_PROFILE_TAB_RELATIONSHIP', 'profile_tab_assigned_to_role');
+
+	// Define other stuff
+	define('PROFILE_BACKGROUND_WIDTH', 968);
+	define('PROFILE_BACKGROUND_PREVIEW_WIDTH', 759);
 		
 	// Register CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/css');
@@ -48,14 +54,20 @@ function roles_init() {
 	$r_js = elgg_get_simplecache_url('js', 'roles/hooks');
 	elgg_register_js('elgg.roles_hooks', $r_js);
 	elgg_load_js('elgg.roles_hooks');
-		
+
+	// Background cropping tool
+	elgg_register_js('elgg.background_cropper', 'mod/roles/views/default/js/roles/background_cropper.js');
+
 	// Add submenus
 	elgg_register_event_handler('pagesetup', 'system', 'roles_submenus');
 	
 	// Page handlers
 	elgg_register_page_handler('roles','roles_page_handler');
 	elgg_register_page_handler('home', 'roles_home_page_handler');
+	elgg_register_page_handler('profile', 'roles_profile_page_handler');
+	elgg_register_page_handler('background', 'roles_profile_background_page_handler');
 					
+
 	// Register URL handler
 	elgg_register_entity_url_handler('object', 'role', 'role_url');		
 	
@@ -110,21 +122,66 @@ function roles_init() {
 	elgg_register_action('roles/removeuser', "$action_base/removeuser.php", 'admin');
 	elgg_register_action('roles/adduser', "$action_base/adduser.php", 'admin');
 	elgg_register_action('roles/edittab', "$action_base/edittab.php", 'admin');
+	elgg_register_action('roles/editprofiletab', "$action_base/editprofiletab.php", 'admin');
 	elgg_register_action('roles/deletetab', "$action_base/deletetab.php", 'admin');
+	elgg_register_action('roles/deleteprofiletab', "$action_base/deleteprofiletab.php", 'admin');
 	elgg_register_action('roles/assigntab', "$action_base/assigntab.php", 'admin');
 	elgg_register_action('roles/unassigntab', "$action_base/unassigntab.php", 'admin');
+	elgg_register_action('roles/set_tab_priority', "$action_base/set_tab_priority.php", 'admin');
+	elgg_register_action('roles/background_upload', "$action_base/background_upload.php");
+	elgg_register_action('roles/background_crop', "$action_base/background_crop.php");
+	elgg_register_action('roles/background_remove', "$action_base/background_remove.php");
 
 	// Whitelist ajax views
 	elgg_register_ajax_view('roles/modules/dashboard_roles');
 	elgg_register_ajax_view('roles/modules/dashboard_tabs');
+	elgg_register_ajax_view('roles/modules/profile_roles');
+	elgg_register_ajax_view('roles/modules/profile_tabs');
 
 	// Extend all role widget edit views
 	roles_extend_widget_views('edit', 'widgets/role_edit');
+
+	// Url handler (for user profile links)
+	elgg_register_entity_url_handler('user', 'all', 'roles_profile_url_handle');
 
 	// Register one once for subtype
 	run_function_once("roles_run_once");
 
 	return true;
+}
+
+/**
+ * Roles pagesetup event handler
+ */
+function roles_pagesetup() {
+	// Allow plugins to register dynamic role widget titles
+	$user = elgg_get_page_owner_entity();
+
+	// Make the role profile widget titles dynamic
+	if (!elgg_in_context('admin_widgets')) {
+		$params = array(
+			'user' => $user,
+			'context' => elgg_get_context()
+		);
+
+		$dynamic_handlers = elgg_trigger_plugin_hook('get_dynamic_handlers', 'role_widgets', $params, array());
+
+		global $CONFIG;
+
+		foreach ($dynamic_handlers as $handler => $title) {
+			$CONFIG->widgets->handlers[$handler]->name = $title;
+		}
+	}
+
+	// Register background image edit menu item
+	if ($user) {
+		elgg_register_menu_item('page', array(
+			'name' => 'edit_background',
+			'href' => "background/edit/{$user->username}",
+			'text' => elgg_echo('roles:profile:editbackground'),
+			'contexts' => array('profile_edit'),
+		));
+	}
 }
 
 /**
@@ -140,12 +197,13 @@ function roles_page_handler($page) {
 				echo elgg_view('roles/users', array('guid' => $guid));
 				break;
 			case 'loadwidgets':
+				elgg_set_context('admin_widgets');
 				$guid = sanitise_string(get_input('guid'));
 				echo elgg_view('roles/widgets', array('guid' => $guid));
 				break;
 			case 'loadtabs':
 				$guid = sanitise_string(get_input('guid'));
-				echo elgg_view('roles/tabs', array('guid' => $guid));
+				echo elgg_view('roles/tabs', array('guid' => $guid, 'type' => get_input('type')));
 				break;
 			default: 
 				return FALSE;
@@ -168,7 +226,7 @@ function roles_home_page_handler($page) {
 	elgg_load_js('elgg.roles');
 	elgg_load_css('elgg.roles');
 
-	$tabs = get_user_dashboard_tabs(0, get_input('role', 0));
+	$tabs = get_user_tabs(0, get_input('role', 0), 'role_dashboard_tab');
 
 	// No tabs? Show an error and get out of here
 	if (!$tabs) {
@@ -194,14 +252,148 @@ function roles_home_page_handler($page) {
 	$content = elgg_view('roles/dashboard/content') . $menu;
 
 	$params = array(
-		'tab_guid' => $tab_guid,
+		'guid' => $tab_guid,
 		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
-		'content' => $content
+		'content' => $content,
+		'widget_type' => 'rolewidget'
 	);
 
 	set_input('custom_widget_controls', TRUE);
 	$body = elgg_view_layout('role_widgets', $params);
 	echo elgg_view_page(elgg_echo('tgstheme:title:home'), $body);
+}
+
+/**
+ * Profile Page Handler
+ *
+ * @param array $page From the page_handler function
+ * @return true|false Depending on success
+ *
+ */
+function roles_profile_page_handler($page) {
+	elgg_load_js('elgg.roles');
+	elgg_load_css('elgg.roles');
+
+	global $CONFIG;
+
+	if (isset($page[0])) {
+		$username = $page[0];
+		$user = get_user_by_username($username);
+		elgg_set_page_owner_guid($user->guid);
+	}
+
+	// short circuit if invalid or banned username
+	if (!$user || ($user->isBanned() && !elgg_is_admin_logged_in())) {
+		register_error(elgg_echo('profile:notfound'));
+		forward();
+	}
+
+	$action = NULL;
+	if (isset($page[1])) {
+		$action = $page[1];
+	}
+
+	switch ($action) {
+		case 'edit':
+			// use for the core profile edit page
+			require $CONFIG->path . 'pages/profile/edit.php';
+			return;
+			break;
+		default:
+
+	}
+
+	$tabs = get_user_tabs($user->guid, get_input('role', 0), 'role_profile_tab');
+
+	// No tabs? Show an error and get out of here
+	if (!$tabs) {
+		register_error(elgg_echo('roles:error:invaliddashboard'));
+		forward('activity');
+	}
+
+	$tab_guid = get_input('tab', FALSE);
+
+	if (!$tab_guid) {
+		$tab_guid = $tabs[0]->guid;
+	}
+
+	if (count($tabs) > 1) {
+		$menu = elgg_view_menu('role-tab-menu', array(
+			'tabs' => $tabs,
+			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default',
+			'sort_by' => 'priority'
+		));
+		$top_class = "border-top";
+	}
+
+	//$content = elgg_view('roles/profile/user', array('user' => $user)) . $menu;
+
+	$params = array(
+		'guid' => $tab_guid,
+		'class' => 'elgg-layout-one-sidebar-roles-home ' . $top_class,
+		'content' => $content,
+		'widget_type' => 'roleprofilewidget',
+		'profile_menu' => $menu
+	);
+
+	set_input('custom_widget_controls', TRUE);
+	$body = elgg_view_layout('profile_widgets', $params);
+	echo elgg_view_page($user->name, $body);
+}
+
+/**
+ * Profile Background Page Handler
+ *
+ * @param array $page From the page_handler function
+ * @return true|false Depending on success
+ *
+ */
+function roles_profile_background_page_handler($page) {
+	$user = get_user_by_username($page[1]);
+	if ($user) {
+		elgg_set_page_owner_guid($user->getGUID());
+	}
+
+	if ($page[0] == 'edit') {
+		global $CONFIG;
+		elgg_load_js('elgg.roles');
+		elgg_load_css('elgg.roles');
+
+		elgg_set_context('profile_edit');
+
+		$title = elgg_echo('roles:profile:editbackground');
+
+		$entity = elgg_get_page_owner_entity();
+		if (!elgg_instanceof($entity, 'user') || !$entity->canEdit()) {
+			register_error(elgg_echo('roles:error:backgroundnoaccess'));
+			forward(REFERER);
+		}
+
+		$content = elgg_view('roles/background_upload', array('entity' => $entity));
+
+		// only offer the crop view if an avatar has been uploaded
+		if (isset($entity->bg_icontime)) {
+			$content .= elgg_view('roles/background_crop', array('entity' => $entity));
+		}
+
+		$params = array(
+			'content' => $content,
+			'title' => $title,
+		);
+		$body = elgg_view_layout('one_sidebar', $params);
+
+		echo elgg_view_page($title, $body);
+
+		return TRUE;
+	} else {
+		if (isset($page[3])) {
+			set_input('background_type', $page[3]);
+		}
+		$path = elgg_get_plugins_path() . 'roles/pages/background/view.php';
+		require_once($path);
+		return TRUE;
+	}
+	return TRUE;
 }
 
 /**
@@ -222,6 +414,8 @@ function roles_submenus() {
 		elgg_register_admin_menu_item('administer', 'manage', 'roles');
 		elgg_register_admin_menu_item('administer', 'dashboard', 'roles');
 		elgg_register_admin_menu_item('administer', 'tabs', 'roles');
+		elgg_register_admin_menu_item('administer', 'profile', 'roles');
+		elgg_register_admin_menu_item('administer', 'profiletabs', 'roles');
 	}
 }
 
@@ -232,20 +426,30 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 
 	$entity = $params['entity'];
 	
-	if (elgg_instanceof($entity, 'object', 'role') || elgg_instanceof($entity, 'object', 'role_dashboard_tab')) {
+	if (elgg_instanceof($entity, 'object', 'role') 
+		|| elgg_instanceof($entity, 'object', 'role_dashboard_tab')
+		|| elgg_instanceof($entity, 'object', 'role_profile_tab')) {
 		$return = array();
 
 		if ($entity->getSubtype() == 'role') {
 			$edit_handler = 'editrole';
 			$delete_handler = 'delete';
-		}
+		} else if ($entity->getSubtype() == 'role_dashboard_tab' || $entity->getSubtype() == 'role_profile_tab') {
+			if ($entity->getSubtype() == 'role_dashboard_tab') {
+				$edit_handler = 'edittab';
+				$delete_handler = 'deletetab';
+				$relationship = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+			} else if ($entity->getSubtype() == 'role_profile_tab') {
+				$edit_handler = 'editprofiletab';
+				$delete_handler = 'deleteprofiletab';
+				$relationship = ROLE_PROFILE_TAB_RELATIONSHIP;
+			}
 
-		if ($entity->getSubtype() == 'role_dashboard_tab') {
 			// Check for assignement context
 			if (elgg_in_context('role_tab_assignment')) {
 				$role_guid = get_input('role_guid');
 
-				if (check_entity_relationship($entity->guid, ROLE_DASHBOARD_TAB_RELATIONSHIP, $role_guid)) {
+				if (check_entity_relationship($entity->guid, $relationship, $role_guid)) {
 					$options = array(
 						'name' => 'remove',
 						'text' => elgg_echo('remove'),
@@ -253,7 +457,7 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/unassigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-unassign-dashboard-tab'
+						'class' => 'elgg-button elgg-button-action roles-unassign-tab'
 					);
 
 					$return[] = ElggMenuItem::factory($options);
@@ -265,15 +469,13 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/assigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-assign-dashboard-tab'
+						'class' => 'elgg-button elgg-button-action roles-assign-tab'
 					);
 
 					$return[] = ElggMenuItem::factory($options);
 				}
 				return $return;
 			}
-			$edit_handler = 'edittab';
-			$delete_handler = 'deletetab';
 		}
 
 		$edit_href = elgg_get_site_url() . "admin/roles/{$edit_handler}?guid={$entity->guid}";
@@ -316,6 +518,14 @@ function roles_user_hover_menu_setup($hook, $type, $return, $params) {
 			'section' => 'admin',
 		);
 		$return[] = ElggMenuItem::factory($options);
+	}
+
+	// Add profile background edit item
+	if (elgg_get_logged_in_user_guid() == $user->guid) {
+		$url = "background/edit/$user->username";
+		$item = new ElggMenuItem('backround:edit', elgg_echo('roles:profile:editbackground'), $url);
+		$item->setSection('action');
+		$return[] = $item;
 	}
 	
 	return $return;
@@ -570,6 +780,16 @@ function roles_save($event, $object_type, $object) {
 		}
 	}
 	return TRUE;
+}
+
+/**
+ * Profile URL generator for $user->getUrl();
+ *
+ * @param ElggUser $user
+ * @return string User URL
+ */
+function roles_profile_url_handle($user) {
+	return elgg_get_site_url() . "profile/" . $user->username;
 }
 
 /**

@@ -11,6 +11,7 @@
  */
 
 $guid = elgg_extract('guid', $vars, NULL);
+$subtype = elgg_extract('type', $vars);
 
 $role = get_entity($guid);
 
@@ -21,11 +22,12 @@ if (!$role) {
 elgg_push_context('role_tab_assignment');
 set_input('role_guid', $guid);
 
-$content = elgg_list_entities(array(
+$content = elgg_list_entities_from_metadata(array(
 	'type' => 'object',
-	'subtype' => 'role_dashboard_tab',
+	'subtype' => $subtype,
 	'limit' => 0,
-	'full_view' => FALSE
+	'full_view' => FALSE,
+	'order_by_metadata' => array('name' => 'priority')
 ));
 
 if (!$content) {
@@ -33,6 +35,11 @@ if (!$content) {
 }
 
 $tabs_label = elgg_echo('admin:roles:tabs');
-$tabs_module = elgg_view_module('inline', $tabs_label, $content);	
+$tabs_module = elgg_view_module('inline', $tabs_label, $content, array('id' => 'tab-list'));	
 
+echo <<<JAVASCRIPT
+	<script type='text/javascript'>
+		elgg.roles.initSortableTabs();
+	</script>
+JAVASCRIPT;
 echo $tabs_module;

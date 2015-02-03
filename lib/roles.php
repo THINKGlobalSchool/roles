@@ -65,6 +65,31 @@ function roles_dashboard_tab_get_edit_content($type, $guid = NULL) {
 }
 
 /**
+ * Role profile tab edit form
+ */
+function roles_dashboard_profile_get_edit_content($type, $guid = NULL) {
+	elgg_push_breadcrumb(elgg_echo('admin:roles:profiletabs'), elgg_get_site_url() . 'admin/roles/profiletabs');
+	if ($type == 'edit') {
+		$profile = get_entity($guid);
+		elgg_push_breadcrumb($profile->title, $profile->getURL());
+		elgg_push_breadcrumb(elgg_echo('edit'));
+		if (!elgg_instanceof($profile, 'object', 'role_profile_tab')) {
+			forward(REFERER);
+		}
+	} else {
+		elgg_push_breadcrumb(elgg_echo('Add'));
+		$profile = null;
+	}
+	
+	$form_vars = roles_dashboard_profile_prepare_form_vars($profile);
+	
+	$content = elgg_view('navigation/breadcrumbs');
+	
+	$content .= elgg_view_form('roles/editprofiletab', array('name' => 'dashboard-tab-edit-form', 'id' => 'dashboard-tab-edit-form'), $form_vars);
+	
+	echo $content;
+}
+/**
  * Prepare the add/edit form variables
  *
  * @param ElggRole $role
@@ -78,7 +103,8 @@ function roles_prepare_form_vars($role= null) {
 		'description' => '',
 		'guid' => NULL,
 		'hidden' => '',
-		'dashboard' => NULL
+		'dashboard' => NULL,
+		'profile' => NULL
 	);
 
 	if ($role) {
@@ -128,6 +154,40 @@ function roles_dashboard_tab_prepare_form_vars($tab = null) {
 	}
 
 	elgg_clear_sticky_form('dashboard-tab-edit-form');
+
+	return $values;
+}
+
+/**
+ * Prepare the add/edit form variables for role profiles
+ *
+ * @param ElggObject $profile
+ * @return array
+ */
+function roles_dashboard_profile_prepare_form_vars($profile = null) {
+
+	// input names => defaults
+	$values = array(
+		'title' => '',
+		'description' => '',
+		'priority' => '',
+		'guid' => NULL,
+		'default_profile' => 0,
+	);
+
+	if ($profile) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = $profile->$field;
+		}
+	}
+
+	if (elgg_is_sticky_form('profile-tab-edit-form')) {
+		foreach (array_keys($values) as $field) {
+			$values[$field] = elgg_get_sticky_value('profile-tab-edit-form', $field);
+		}
+	}
+
+	elgg_clear_sticky_form('profile-tab-edit-form');
 
 	return $values;
 }
@@ -391,20 +451,30 @@ function get_user_dashboard_roles($user_guid = 0) {
  * @param  int    $role_guid Specific role to grab tabs for
  * @return array
  */
-function get_user_dashboard_tabs($user_guid = 0, $role_guid = 0) {
+function get_user_tabs($user_guid = 0, $role_guid = 0, $subtype = NULL) {
 	if (!$user_guid) {
 		$user_guid = elgg_get_logged_in_user_guid();
+	}
+
+	if (!$subtype) {
+		return FALSE;
+	}
+
+	if ($subtype == 'role_dashboard_tab') {
+		$relationship = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+	} else if ($subtype == 'role_profile_tab') {
+		$relationship = ROLE_PROFILE_TAB_RELATIONSHIP;
 	}
 
 	$dbprefix = elgg_get_config('dbprefix');
 	$user_guid = elgg_get_logged_in_user_guid();
 	$rr = ROLE_RELATIONSHIP;
-	$tr = ROLE_DASHBOARD_TAB_RELATIONSHIP;
+	$tr = $relationship;
 
 	// Get all tabs, sorted by priority
 	$tab_options = array(
 		'type' => 'object',
-		'subtype' => 'role_dashboard_tab',
+		'subtype' => $subtype,
 		'limit' => 0,
 		'order_by_metadata' => array(
 			'name' => 'priority',
@@ -437,7 +507,7 @@ function get_user_dashboard_tabs($user_guid = 0, $role_guid = 0) {
 		// Remove all other default tabs (only one)
 		$default_tabs = elgg_get_entities_from_metadata(array(
 			'type' => 'object',
-			'subtype' => 'role_dashboard_tab',
+			'subtype' => $subtype,
 			'limit' => 1, // There is only ever one default
 			'metadata_name' => 'default_tab',
 			'metadata_value' => 1,
@@ -470,4 +540,72 @@ function roles_extend_widget_views($view, $view_extension, $priority = 501) {
 			}
 		}
 	}
+}
+
+/**
+ * Modified version of the elgg get excerpt function
+ * that doesn't butcher tags
+ *
+ * @param string $text      The full text to excerpt
+ * @param int    $num_chars Return a string up to $num_chars long
+ *
+ * @return string
+ */
+function roles_get_excerpt($text, $num_chars = 250) {
+	$text = trim($text);
+	$string_length = elgg_strlen($text);
+
+	if ($string_length <= $num_chars) {
+		return $text;
+	}
+
+	// handle cases
+	$excerpt = elgg_substr($text, 0, $num_chars);
+	$space = elgg_strrpos($excerpt, ' ', 0);
+
+	// don't crop if can't find a space.
+	if ($space === FALSE) {
+		$space = $num_chars;
+	}
+	$excerpt = trim(elgg_substr($excerpt, 0, $space));
+
+	if ($string_length != elgg_strlen($excerpt)) {
+		$excerpt .= '...';
+	}
+
+	return $excerpt;
+}
+
+/**
+ * Get the user's background photo url
+ *
+ * @param ElggUser $user
+ */
+function roles_get_user_background_url($user, $type = FALSE) {
+	if ($type) {
+		$background_type = "/{$type}";
+	}
+	return "background/view/{$user->username}/{$user->bg_icontime}{$background_type}";
+}
+
+/**
+ * Set tab priority
+ */
+function roles_set_tab_priority($tab, $priority) {
+	$subtype = $tab->getSubtype();
+
+	$tabs = elgg_get_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => $subtype,
+		'limit' => 0,
+		'metadata_name' => 'priority',
+		'metadata_value' => $priority
+	));
+
+	$tab->priority = $priority;
+
+	foreach ($tabs as $t) {
+		roles_set_tab_priority($t, $priority + 1);
+	}
+	return TRUE;
 }

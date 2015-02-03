@@ -17,6 +17,10 @@ $class = elgg_extract('class', $vars, '');
 $show_add_widgets = elgg_extract('show_add_widgets', $vars, false);
 $show_add_panel = elgg_extract('show_add_panel', $vars, false);
 $widget_type = elgg_extract('widget_type', $vars);
+$user_info_column = $num_columns;
+$user = elgg_get_page_owner_entity();
+$menu = elgg_extract('profile_menu', $vars, FALSE);
+
 // $show_access = elgg_extract('show_access', $vars, true);
 
 $entity_guid = elgg_extract('guid', $vars, false);
@@ -51,9 +55,43 @@ if (elgg_can_edit_widget_layout($context)) {
 	}
 }
 
+$icon = elgg_view_entity_icon($user, 'large');
+
 echo $vars['content'];
 
-echo "<div class='elgg-layout-widgets clearfix {$class}'>";
+echo "<div class='elgg-layout clearfix {$class}'>";
+
+if ($menu) {
+	$menu_content = "<div class='roles-profile-user-avatar-block-menu'>{$menu}</div>";
+}
+
+
+
+if (!$user->bg_icontime) {
+	$background_class = 'no-bg';
+} else {
+	$url = elgg_normalize_url(roles_get_user_background_url($user));
+	$background_style = "style='background: url($url);'";
+}
+
+// Add edit background button
+if ($user->canEdit()) {
+	$edit_button = elgg_view('output/url', array(
+		'text' => elgg_view('input/button', array(
+			'name' => 'editbackground',
+			'value' => elgg_echo('roles:profile:editbgshort'),
+			'class' => 'elgg-button-action',
+			'id' => 'edit-background-profile'
+		)),
+		'href' => elgg_normalize_url("background/edit/{$user->username}")
+	));
+}
+
+echo "<div class='roles-profile-user-avatar-block {$background_class}' {$background_style}>
+	$icon
+	$menu_content
+	$edit_button
+</div>";
 
 $widget_class = "elgg-col-1of{$num_columns}";
 for ($column_index = 1; $column_index <= $num_columns; $column_index++) {
@@ -64,6 +102,12 @@ for ($column_index = 1; $column_index <= $num_columns; $column_index++) {
 	}
 
 	echo "<div class=\"$widget_class elgg-widgets\" id=\"elgg-widget-col-$column_index\">";
+
+	// Output the user info block (sort of like a persistent widget)
+	if ($column_index == $user_info_column) {
+		echo elgg_view('roles/profile/user', array('user' => $user));
+	}
+
 	if (sizeof($column_widgets) > 0) {
 		foreach ($column_widgets as $widget) {
 			if (array_key_exists($widget->handler, $widget_types)) {
