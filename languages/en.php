@@ -10,7 +10,7 @@
  * 
  */
 
-$english = array(
+return array(
 	// Generic
 	'roles' => 'Roles',
 	'admin:roles' => 'Roles',

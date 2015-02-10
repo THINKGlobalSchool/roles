@@ -68,8 +68,9 @@ function roles_init() {
 	elgg_register_page_handler('background', 'roles_profile_background_page_handler');
 					
 
-	// Register URL handler
-	elgg_register_entity_url_handler('object', 'role', 'role_url');		
+	// Register URL handlers
+	elgg_register_plugin_hook_handler('entity:url', 'object', 'role_url');
+	elgg_register_plugin_hook_handler('entity:url', 'user', 'roles_profile_url_handler');
 	
 	// Role entity menu hook
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'roles_setup_entity_menu', 9999);	
@@ -140,9 +141,6 @@ function roles_init() {
 
 	// Extend all role widget edit views
 	roles_extend_widget_views('edit', 'widgets/role_edit');
-
-	// Url handler (for user profile links)
-	elgg_register_entity_url_handler('user', 'all', 'roles_profile_url_handle');
 
 	// Register one once for subtype
 	run_function_once("roles_run_once");
@@ -397,13 +395,40 @@ function roles_profile_background_page_handler($page) {
 }
 
 /**
- * Populates the ->getUrl() method for role entities
+ * Returns the URL from a role entity
  *
- * @param ElggRole entity
- * @return string request url
+ * @param string $hook   'entity:url'
+ * @param string $type   'object'
+ * @param string $url    The current URL
+ * @param array  $params Hook parameters
+ * @return string
  */
-function role_url($entity) {
-	return elgg_get_site_url() . 'admin/roles/viewrole?guid=' . $entity->guid;
+function role_url($hook, $type, $url, $params) {
+    $entity = $params['entity'];
+
+    // Check that the entity is a role object
+    if ($entity->getSubtype() !== 'role') {
+        return;
+    }
+    return "admin/roles/viewrole?guid={$entity->guid}";
+}
+
+/**
+ * Returns the URL for a user
+ *
+ * @param string $hook   'entity:url'
+ * @param string $type   'object'
+ * @param string $url    The current URL
+ * @param array  $params Hook parameters
+ * @return string
+ */
+function roles_profile_url_handler($hook, $type, $url, $params) {
+    $entity = $params['entity'];
+    // Check that the entity is a user object
+    if (!elgg_instanceof($entity, 'user')) {
+        return;
+    }
+   	return "profile/{$entity->username}";
 }
 
 /**
@@ -457,10 +482,10 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/unassigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-unassign-tab'
+						'link_class' => 'elgg-button elgg-button-action roles-unassign-tab'
 					);
 
-					$return[] = ElggMenuItem::factory($options);
+					$return[] = \ElggMenuItem::factory($options);
 				} else {
 					$options = array(
 						'name' => 'add',
@@ -469,10 +494,10 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 						'section' => 'info',
 						'href' => "action/{$params['handler']}/assigntab?tab_guid={$entity->getGUID()}&role_guid={$role_guid}",
 						'priority' => 3,
-						'class' => 'elgg-button elgg-button-action roles-assign-tab'
+						'link_class' => 'elgg-button elgg-button-action roles-assign-tab'
 					);
 
-					$return[] = ElggMenuItem::factory($options);
+					$return[] = \ElggMenuItem::factory($options);
 				}
 				return $return;
 			}
@@ -486,7 +511,7 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 			'href' => $edit_href,
 			'priority' => 2,
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 		
 		$options = array(
 			'name' => 'delete',
@@ -497,7 +522,7 @@ function roles_setup_entity_menu($hook, $type, $return, $params) {
 			'priority' => 3,
 		);
 
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 	}
 
 	return $return;
@@ -517,13 +542,13 @@ function roles_user_hover_menu_setup($hook, $type, $return, $params) {
 			'href' => elgg_add_action_tokens_to_url("action/roles/adduser?members[]={$user->guid}&role_guid={$role->guid}"),
 			'section' => 'admin',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 	}
 
 	// Add profile background edit item
 	if (elgg_get_logged_in_user_guid() == $user->guid) {
 		$url = "background/edit/$user->username";
-		$item = new ElggMenuItem('backround:edit', elgg_echo('roles:profile:editbackground'), $url);
+		$item = new \ElggMenuItem('backround:edit', elgg_echo('roles:profile:editbackground'), $url);
 		$item->setSection('action');
 		$return[] = $item;
 	}
@@ -558,7 +583,7 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
 			'href' => false,
 			'priority' => 300,
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 
 		// Search by role input
 		$options = array(
@@ -567,7 +592,7 @@ function roles_photo_list_menu_setup($hook, $type, $return, $params) {
 			'href' => false,
 			'priority' => 301,
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 	}
 
 	return $return;
@@ -605,7 +630,7 @@ function roles_tab_menu_setup($hook, $type, $return, $params) {
 			'selected' => ($current_tab == $tab->guid),
 			'priority' => $tab->priority
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$return[] = \ElggMenuItem::factory($options);
 	}
 
 
@@ -638,7 +663,7 @@ function roles_activity_menu_setup($hook, $type, $return, $params) {
 		'priority' => 499,
 	);
 
-	$return[] = ElggMenuItem::factory($options);
+	$return[] = \ElggMenuItem::factory($options);
 
 	return $return;
 }
@@ -780,16 +805,6 @@ function roles_save($event, $object_type, $object) {
 		}
 	}
 	return TRUE;
-}
-
-/**
- * Profile URL generator for $user->getUrl();
- *
- * @param ElggUser $user
- * @return string User URL
- */
-function roles_profile_url_handle($user) {
-	return elgg_get_site_url() . "profile/" . $user->username;
 }
 
 /**

@@ -18,30 +18,27 @@ elgg.roles.getWidgetsURL = 'roles/loadwidgets';
 elgg.roles.getTabsURL = 'roles/loadtabs';
 
 // Init function 
-elgg.roles.init = function() {
-	// Remove confirmation click hander
-	$('.elgg-requires-confirmation').die('click');
-	
+elgg.roles.init = function() {	
 	// Click event for remove button
-	$('a.remove-from-role').live('click', elgg.roles.remove_user);
+	$(document).on('click', 'a.remove-from-role', elgg.roles.remove_user);
 	
 	// Click event for add button
-	$('.add-to-role').live('click', elgg.roles.add_user);
+	$(document).on('click', '.add-to-role', elgg.roles.add_user);
 
 	// Init widget delete
-	$('a.elgg-widget-delete-button').live('click', elgg.ui.widgets.remove);
+	$(document).on('click', 'a.elgg-widget-delete-button', elgg.ui.widgets.remove);
 
 	// Init roles assign button
-	$('.roles-assign-tab, .roles-unassign-tab').live('click', elgg.roles.assign_tab);
+	$(document).on('click', '.roles-assign-tab, .roles-unassign-tab', elgg.roles.assign_tab);
 
 	// Disable widget dragging on the home page
 	$('.elgg-layout-one-sidebar-roles-home .elgg-widgets').sortable('disable');
 
 	// Click handler for description show less link
-	$('#user-about-showless').live('click', elgg.roles.showLessClick);
+	$(document).on('click', '#user-about-showless', elgg.roles.showLessClick);
 
 	// Click handler for description show more link
-	$('#user-about-showmore').live('click', elgg.roles.showMoreClick);
+	$(document).on('click', '#user-about-showmore', elgg.roles.showMoreClick);
 
 	// Init ajax widgets
 	elgg.roles.initAjaxWidgets();
@@ -331,7 +328,7 @@ elgg.roles.add_widget = function(event) {
 	elgg.action('widgets/add', {
 		data: {
 			handler: type,
-			owner_guid: tab_guid,
+			page_owner_guid: tab_guid,
 			context: $("input[name='widget_context']").val(),
 			default_widgets: $("input[name='default_widgets']").val() || 0,
 			show_access: '0'
@@ -345,28 +342,25 @@ elgg.roles.add_widget = function(event) {
 
 // Click handler for remove links
 elgg.roles.remove_user = function(event) {
-	var confirmText = $(this).attr('rel') || elgg.echo('question:areyousure');
-	if (confirm(confirmText)) {
-		// Grab user ID and role ID
-		var user_guid = $(this).attr('id');
-		var role_guid = $(this).attr('name');
-		var _this = $(this);
+	// Grab user ID and role ID
+	var user_guid = $(this).attr('id');
+	var role_guid = $(this).attr('name');
+	var _this = $(this);
 
-		elgg.action('roles/removeuser', {
-			data: {
-				user_guid: user_guid,
-				role_guid: role_guid
-			},
-			success: function(data) {
-				if (data.status == -1) {
-					//console.log('error: ' + data.system_messages.error);
-				} else {
-					// Remove element from DOM
-					_this.closest('div.elgg-image-block').fadeOut('slow');
-				}
+	elgg.action('roles/removeuser', {
+		data: {
+			user_guid: user_guid,
+			role_guid: role_guid
+		},
+		success: function(data) {
+			if (data.status == -1) {
+				//console.log('error: ' + data.system_messages.error);
+			} else {
+				// Remove element from DOM
+				_this.closest('div.elgg-image-block').fadeOut('slow');
 			}
-		});
-	} 
+		}
+	});
 	event.preventDefault();
 }
 
@@ -378,7 +372,7 @@ elgg.roles.add_user = function(event) {
 		data: data,
 		success: function(data) {
 			if (data.status == -1) {
-				//console.log('error: ' + data.system_messages.error);
+				console.log('error: ' + data.system_messages.error);
 			} else {
 				elgg.roles.load_users(role_guid);
 			}

@@ -18,17 +18,18 @@ if (!$role) {
 	return;
 }
 
-$role_users = $role->getMembers(0, 0, false, true);
+$role_users = $role->getMembers(0, 0, FALSE, TRUE);
 
 if ($role_users) {
 	foreach($role_users as $user) {
 		$icon = elgg_view_entity_icon($user, 'tiny');
 		
-		$delete_button = elgg_view("output/confirmlink",array(
+		$delete_button = elgg_view("output/url",array(
 			'href' => "action/roles/removeuser?user_guid={$user->guid}&role_guid={$role->guid}",
 			'text' => "<span class=\"elgg-icon elgg-icon-delete right\"></span>",
 			'confirm' => elgg_echo('roles:removeconfirm'),
-			'text_encode' => false,
+			'is_trusted' => TRUE,
+			'is_action' => TRUE,
 			'id' => $user->guid,
 			'class' => 'remove-from-role',
 			'name' => $role->guid,
