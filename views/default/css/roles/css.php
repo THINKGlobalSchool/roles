@@ -144,19 +144,6 @@
 	border-right:1px solid #ccc;
 }
 
-#user-background-preview {
-	float: left;
-	position: relative;
-	overflow: hidden;
-	height: 156px;
-	width: 720px;
-}
-
-#user-background-preview-canvas {
-	height: 156px;
-	width: <?php echo PROFILE_BACKGROUND_PREVIEW_WIDTH; ?>px;
-}
-
 #current-user-background {
 	height: 156px;
 }
@@ -174,3 +161,33 @@ img#user-background-cropper {
 	position: absolute;
 	z-index: 1000;
 }
+
+.cropit-image-preview {
+  width: <?php echo PROFILE_BACKGROUND_PREVIEW_WIDTH; ?>px;
+  height: <?php echo PROFILE_BACKGROUND_PREVIEW_HEIGHT; ?>px;
+}
+
+.cropit-zoom-disabled {
+	opacity: 0.3;
+}
+
+input.cropit-image-zoom-input {
+	width: 200px;
+	border: 0;
+	border-radius: 0;
+}
+
+input.cropit-image-zoom-input:focus {
+	box-shadow: none;
+}
+
+.cropit-control-container {
+	margin-top: 10px;
+	text-align: center;
+}
+
+.cropit-control-container * {
+	vertical-align: middle;
+}
+
+
