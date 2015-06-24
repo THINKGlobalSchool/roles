@@ -9,6 +9,7 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
+
 class ElggRole extends ElggObject {
 	/**
 	 * Set subtype to 'role'.

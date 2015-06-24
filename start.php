@@ -16,18 +16,14 @@
  * - admin/appearance/default_widgets
  * - object/widget
  */
-
+elgg_register_library('elgg:roles', elgg_get_plugins_path() . 'roles/lib/roles.php');
+elgg_load_library('elgg:roles');
 elgg_register_event_handler('init', 'system', 'roles_init');
 elgg_register_event_handler('pagesetup', 'system', 'roles_pagesetup',501);
 
 function roles_init() {	
-	
-	// Register and load library
-	elgg_register_library('roles', elgg_get_plugins_path() . 'roles/lib/roles.php');
-	elgg_load_library('roles');
-	
 	// Register class
-	elgg_register_class('ElggRole', elgg_get_plugins_path() . 'roles/lib/classes/ElggRole.php');
+	elgg_register_class('ElggRole', elgg_get_plugins_path() . 'roles/classes/ElggRole.php');
 	
 	// Define relationships
 	define('ROLE_RELATIONSHIP', 'member_of_role');
