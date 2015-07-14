@@ -11,14 +11,6 @@
  */
 ?>
 /** Roles homepage **/
-.elgg-layout-one-sidebar-roles-home.border-top div#elgg-widget-col-2 {
-	border-top: 2px solid #AAA;
-}
-
-.elgg-layout-one-sidebar-roles-home.border-top div#elgg-widget-col-1 {
-	border-top: 2px solid #DDD;
-}
-
 .elgg-menu-role-tab-menu {
 	background: none;
 	margin-bottom: 0;
