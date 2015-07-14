@@ -32,7 +32,9 @@ function roles_init() {
 
 	// Define other stuff
 	define('PROFILE_BACKGROUND_WIDTH', 968);
+	define('PROFILE_BACKGROUND_HEIGHT', 200);
 	define('PROFILE_BACKGROUND_PREVIEW_WIDTH', 759);
+	define('PROFILE_BACKGROUND_PREVIEW_HEIGHT', (PROFILE_BACKGROUND_PREVIEW_WIDTH / PROFILE_BACKGROUND_WIDTH) * PROFILE_BACKGROUND_HEIGHT);
 		
 	// Register CSS
 	$r_css = elgg_get_simplecache_url('css', 'roles/css');
@@ -50,6 +52,11 @@ function roles_init() {
 	$r_js = elgg_get_simplecache_url('js', 'roles/hooks');
 	elgg_register_js('elgg.roles_hooks', $r_js);
 	elgg_load_js('elgg.roles_hooks');
+
+	// Register Cropit JS
+	$c_js = elgg_get_simplecache_url('js', 'jquery.cropit');
+	elgg_register_simplecache_view('js/jquery.cropit');
+	elgg_register_js('jquery.cropit', $c_js);
 
 	// Background cropping tool
 	elgg_register_js('elgg.background_cropper', 'mod/roles/views/default/js/roles/background_cropper.js');

@@ -38,20 +38,10 @@ try {
 	// Get file size info
 	$size_info = getimagesize($_FILES['background']['tmp_name']);
 
-	if ($size_info[0] > PROFILE_BACKGROUND_WIDTH) {
-		$max_width = PROFILE_BACKGROUND_WIDTH * 1.5;
 
-		// Resize the image
-		$resized = get_resized_image_from_uploaded_file('background', $max_width, $size_info[1], false, false);
-		
-		$file->write($resized);
-		$file->close();
-	} else {
-		// File is smaller than the background area, just the file in place
-		$file->close();
-		move_uploaded_file($_FILES['background']['tmp_name'], $file->getFilenameOnFilestore());
-	}
-	
+	$file->close();
+	move_uploaded_file($_FILES['background']['tmp_name'], $file->getFilenameOnFilestore());
+
 	$files[] = $file;
 
 	// Copy the file for the cropped image
@@ -73,12 +63,6 @@ try {
 	register_error(elgg_echo('roles:error:backgroundupload'));
 	forward(REFERER);
 }
-
-// reset crop coordinates
-$owner->bg_x1 = 0;
-$owner->bg_x2 = 0;
-$owner->bg_y1 = 0;
-$owner->bg_y2 = 0;
 
 $owner->bg_icontime = time();
 

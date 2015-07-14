@@ -76,7 +76,7 @@ return array(
 	'roles:profile:remove' => 'Remove your background',
 	'roles:profile:backgroundcrop' => 'Background cropping tool',
 	'roles:profile:backgroundinstructions' => "Your backround is displayed on your profile. You can change it as often as you'd like. (File formats accepted: GIF, JPG or PNG)",
-	'roles:profile:backgroundcropinstructions' => 'Click and drag a box below to match how you want your background cropped. A preview will appear in the box on the right. When you are happy with the preview, click \'Create your background\'. This cropped version will be used on your profile.',
+	'roles:profile:backgroundcropinstructions' => 'Use the slider below the background preview to zoom in/out then click and drag the image to position it.',
 
 	// River
 	
