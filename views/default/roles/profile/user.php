@@ -119,6 +119,10 @@ if ($user->mobile) {
 	$mobile = "<div><label>{$mobile_label}</label>$mobile_link</div>";
 }
 
+if ($user_location) {
+	$user_location = "<i class='fa fa-fw fa-lg fa-map-marker'></i>$user_location";
+}
+
 $content = <<<HTML
 	<div class='roles-profile-user-block'>
 		<div class='roles-profile-user-block-about-container'>
@@ -126,11 +130,11 @@ $content = <<<HTML
 				<h1>$user_link</h1>
 			</div>
 			<div class='roles-profile-user-block-about-meta'></div>
-			<div class='roles-profile-user-block-about-content $user_about_class'>
-				<div class='user-location'><i class="fa fa-fw fa-lg fa-map-marker"></i>$user_location</div>
+			<div class='roles-profile-user-block-about-content'>
+				<div class='user-location'>$user_location</div>
 				<div class='user-joined'><i class="fa fa-fw fa-lg fa-clock-o"></i>$user_joined</div>
 				<div class='user-brief'>$user_brief</div>
-				$user_about
+				<div class='$user_about_class'>$user_about</div>
 			</div>
 			<div class='roles-profile-user-block-contact-container'>
 				$twitter$website$email$phone$mobile
