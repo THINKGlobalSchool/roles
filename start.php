@@ -170,7 +170,8 @@ function roles_pagesetup() {
 		global $CONFIG;
 
 		foreach ($dynamic_handlers as $handler => $title) {
-			$CONFIG->widgets->handlers[$handler]->name = $title;
+			_elgg_services()->widgets->unregisterType($handler);
+			_elgg_services()->widgets->registerType($handler, $title, '', array('roleprofilewidget'));
 		}
 	}
 
